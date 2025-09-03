@@ -1,0 +1,639 @@
+#include "minishell.h"
+
+int echo(t_data *data)
+{
+    int i;
+    int newline;
+
+    i = 1;
+    newline = 1;
+
+    if (data->args[1] && ft_strcmp(data->args[1], "-n") == 0)
+    {
+        newline = 0;
+        i = 2;
+    }
+    while (data->args[i])
+    {
+        printf("%s", data->args[i]);
+        if (data->args[i + 1])
+            printf(" ");
+        i++;
+    }
+    if (newline)
+        printf("\n");
+    return (0);
+}
+
+int pwd(t_data *data)
+{
+	char	*current_dir;
+
+	(void)data;
+	current_dir = getcwd(NULL, 0);
+	if (!current_dir)
+	{
+		perror("minishell: pwd");
+		return (1);
+	}
+	printf("%s\n", current_dir);
+	free(current_dir);
+	return (0);
+}
+
+void	add_env_var(t_data *data, char *new_var_str) //should understand this
+{
+	char	**new_envp;
+	int		count;
+	int		i;
+
+	count = 0;
+	while (data->envp[count])
+		count++;
+	new_envp = malloc(sizeof(char *) * (count + 2));
+	if (!new_envp)
+		return;
+	i = 0;
+	while (i < count)
+	{
+		new_envp[i] = data->envp[i];
+		i++;
+	}
+	new_envp[i] = new_var_str;
+	new_envp[i + 1] = NULL;
+	free(data->envp);
+	data->envp = new_envp;
+}
+
+int	find_env_var(char **envp, char *var_name) //should understand this
+{
+	int		i;
+	int		name_len;
+
+	i = 0;
+	name_len = ft_strlen(var_name);
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], var_name, name_len) == 0
+			&& envp[i][name_len] == '=')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+void	set_env_variable(t_data *data, char *var_name, char *value)
+{
+	int		index;
+	char	*temp_str;
+	char	*new_var_str;
+
+	temp_str = ft_strjoin(var_name, "=");
+	new_var_str = ft_strjoin(temp_str, value);
+	free(temp_str);
+	index = find_env_var(data->envp, var_name);
+	if (index == -1)
+		add_env_var(data, new_var_str);
+	else
+	{
+		free(data->envp[index]);
+		data->envp[index] = new_var_str;
+	}
+} //i stopped here without fully understand how to add if it doesn't exist or modify if an env variable exist.
+
+void	update_pwd_vars(t_data *data, char *old_pwd)
+{
+	char	*new_pwd;
+
+	set_env_variable(data, "OLDPWD", old_pwd);
+	free(old_pwd);
+	new_pwd = getcwd(NULL, 0);
+	if (new_pwd)
+	{
+		set_env_variable(data, "PWD", new_pwd);
+		free(new_pwd);
+	}
+}
+
+char	*get_cd_path(t_data *data)
+{
+	char	*path;
+
+	if (data->args[1] == NULL)
+	{
+		path = getenv("HOME");
+		if (path == NULL)
+			printf("minishell: cd: HOME not set\n");
+		return (path);
+	}
+	return (data->args[1]);
+}
+
+int	cd(t_data *data)
+{
+	char	*path;
+	char	*old_pwd;
+
+	old_pwd = getcwd(NULL, 0);
+	if (!old_pwd)
+	{
+		perror("minishell: cd");
+		return (1);
+	}
+	path = get_cd_path(data);
+	if (!path)
+	{
+		free(old_pwd);
+		return (1);
+	}
+	if (chdir(path))
+	{
+		perror("minishell: cd");
+		free(old_pwd);
+		return (1);
+	}
+	update_pwd_vars(data, old_pwd);
+	return (0);
+}
+
+char	**duplicate_env(t_data *data)
+{
+	char	**new_envp;
+	int		count;
+	int		i;
+
+	count = 0;
+	while (data->envp[count])
+		count++;
+	new_envp = malloc(sizeof(char *) * (count + 1));
+	if (!new_envp)
+		return (NULL);
+	i = 0;
+	while (i < count)
+	{
+		new_envp[i] = data->envp[i];
+		i++;
+	}
+	new_envp[i] = NULL;
+	return (new_envp);
+}
+
+void	sort_env_array(char **envp_copy)
+{
+	char	*temp_str;
+	int		count;
+	int		i;
+	int		j;
+
+	count = 0;
+	while (envp_copy[count])
+		count++;
+	i = 0;
+	while (i < count - 1)
+	{
+		j = 0;
+		while (j < count - i - 1)
+		{
+			if (ft_strcmp(envp_copy[j], envp_copy[j + 1]) > 0)
+			{
+				temp_str = envp_copy[j];
+				envp_copy[j] = envp_copy[j + 1];
+				envp_copy[j + 1] = temp_str;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
+void	print_one_env_for_export(char *env_str)
+{
+	int	i;
+
+	i = 0;
+	printf("declare -x ");
+	while (env_str[i] && env_str[i] != '=')
+	{
+		printf("%c", env_str[i]);
+		i++;
+	}
+	if (env_str[i] == '=')
+		printf("=\"%s\"", &env_str[i + 1]);
+	printf("\n");
+}
+
+void	print_env(t_data *data)
+{
+	char	**envp_copy;
+	int		i;
+
+	envp_copy = duplicate_env(data);
+	if (!envp_copy)
+		return;
+	sort_env_array(envp_copy);
+	i = 0;
+	while (envp_copy[i])
+	{
+		print_one_env_for_export(envp_copy[i]);
+		i++;
+	}
+	free(envp_copy);
+}
+
+char *get_value(char *str, int i)
+{
+	int l;
+
+	l = ft_strlen(str) - i;
+	return (ft_substr(str, i, l));
+}
+
+char *get_name(char *str, int *i)
+{
+	if((str[0] >= 'a' && str[0] <= 'z') || (str[0] >= 'A' && str[0] <= 'Z') || str[0] == '_')
+	{
+		while(str[*i])
+		{
+			if(str[*i] == '=')
+				return (ft_substr(str, 0, *i));
+			(*i)++;
+		}
+	}
+	else
+		return (NULL);
+}
+
+int export(t_data *data)
+{
+	int i;
+	int l;
+	char *name;
+	char *value;
+
+	name = NULL;
+	l = 0;
+	if(!data->args[1])
+		print_env(data);
+	else
+	{
+		name = get_name(data->args[1], &l);
+		if(name)
+			value = get_value(data->args[1], l + 1);
+		else
+			set_env_variable(data, name, value);
+	}
+    return (0);
+}
+
+int unset(t_data *data)
+{
+    // (void)args; and (void)data;
+	printf("this is unset\n");
+    return (0);
+}
+
+int env(t_data *data)
+{
+    // (void)args; and (void)data;
+	printf("this is env\n");
+    return (0);
+}
+
+int b_exit(t_data *data)
+{
+    // (void)args; and (void)data;
+	printf("this is exit\n");
+    return (0);
+}
+
+void compare_cmd(t_data *data, t_built_in *builtins)
+{
+	int i;
+
+	i = 0;
+	if (data->args == NULL || data->args[0] == NULL)
+    	return;
+	while(builtins[i].cmds)
+	{
+		if (ft_strcmp(builtins[i].cmds, data->args[0]) == 0)
+		{
+			builtins[i].func(data);
+			return;
+		}
+		i++;
+	}
+	printf("minishell: %s: command not found\n", data->args[0]);
+}
+
+int escape_spaces(char *str, int i)
+{
+	while(str[i] && str[i] == ' ')
+		i++;
+	return (i);
+}
+
+void remove_quotes(t_data *data, int i)
+{
+	char *str;
+	int x;
+	int j;
+	int l;
+
+	x = 0;
+	j = 1;
+	l = ft_strlen(data->args[i]) - 2;
+	str = malloc(sizeof(char) * (l + 1));
+	while(x < l)
+	{
+		str[x] = data->args[i][j];
+		x++;
+		j++;
+	}
+	str[x] = '\0';
+	free(data->args[i]);
+	data->args[i] = str;
+}
+
+int	env_len(char *str, int i)
+{
+	int	l;
+
+	l = 0;
+	// Maybe i should handle `$?` here later.
+	if (str[i] == '?')
+		return (1);
+	while (str[i + l] && (ft_isalnum(str[i + l]) || str[i + l] == '_'))
+		l++;
+	return (l);
+}
+
+
+int	get_total_len(char *arg_str, int i, int total_len)
+{
+	int		l;
+	char	*env_name;
+	char	*env_value;
+
+	while (arg_str[i])
+	{
+		if (arg_str[i] == '$')
+		{
+			i++;
+			l = env_len(arg_str, i);
+			env_name = ft_substr(arg_str, i, l);
+			env_value = getenv(env_name); //$?
+			if (env_value)
+				total_len += ft_strlen(env_value);
+			free(env_name);
+			i += l;
+		}
+		else
+		{
+			total_len++;
+			i++;
+		}
+	}
+	return (total_len);
+}
+
+void	copy_env_value(char *new_arg, int *x, char *env_name)
+{
+	char	*env_value;
+	int		j;
+
+	env_value = getenv(env_name);
+	j = 0;
+	if (env_value)
+	{
+		while (env_value[j])
+		{
+			new_arg[*x] = env_value[j];
+			(*x)++;
+			j++;
+		}
+	}
+}
+
+char	*expand_argument(char *str, int len, int i, int x)
+{
+	char	*new_arg;
+	int		l;
+	char	*env_name;
+
+	new_arg = malloc(sizeof(char) * (len + 1));
+	if (!new_arg)
+		return (NULL);
+	while (str[i])
+	{
+		if (str[i] == '$')
+		{
+			i++;
+			l = env_len(str, i);
+			env_name = ft_substr(str, i, l);
+			copy_env_value(new_arg, &x, env_name);
+			free(env_name);
+			i += l;
+		}
+		else
+			new_arg[x++] = str[i++];
+	}
+	new_arg[x] = '\0';
+	return (new_arg);
+}
+
+void	manage_env(t_data *data)
+{
+	int		i;
+	char	*new_arg;
+	int		total_len;
+
+	i = 0;
+	while (data->args[i])
+	{
+		if (data->args[i][0] == 39)
+			remove_quotes(data, i);
+		else
+		{
+			if (data->args[i][0] == 34)
+				remove_quotes(data, i);
+			total_len = get_total_len(data->args[i], 0, 0);
+			new_arg = expand_argument(data->args[i], total_len, 0, 0);
+			free(data->args[i]);
+			data->args[i] = new_arg;
+		}
+		i++;
+	}
+}
+
+void get_args(t_data *data, char *line, int l, int i)
+{
+	int j;
+	int start;
+
+	data->args = malloc(sizeof(char *) * (l + 1));
+	if(!data->args)
+		return;
+	j = 0;
+	while(j < l)
+	{
+		i = escape_spaces(line, i);
+		start = i;
+		if(line[i] == 39)
+			i = escape_char(line, i, 39);
+		else if(line[i] == 34)
+			i = escape_char(line, i, 34);
+		else
+		{
+			while(line[i] && line[i] != ' ' && line[i] != 39 && line[i] != 34)
+				i++;
+		}
+		data->args[j] = ft_substr(line, start, i - start);
+		j++;
+	}
+	data->args[l] = NULL;
+	manage_env(data);
+}
+
+int escape_char(char *line, int i, char c)
+{
+	i++;
+	while(line[i] && line[i] != c)
+		i++;
+	if (line[i] == c)
+		i++;
+	return i;
+}
+
+int nb_of_args(char *line)
+{
+	int i;
+	int k;
+
+	i = 0;
+	k = 0;
+	while(line[i])
+	{
+		i = escape_spaces(line, i);
+		if (!line[i])
+			break;
+		k++;
+		if (line[i] == 39)
+			i = escape_char(line, i, 39);
+		else if(line[i] == 34)
+			i = escape_char(line, i, 34);
+		else
+		{
+			while(line[i] && line[i] != ' ' && line[i] != 39 && line[i] != 34)
+				i++;
+		}
+	}
+	return (k);
+}
+
+void analyse_line(t_data *data, t_built_in *builtins, char *line)
+{
+	int l;
+
+	l = nb_of_args(line);
+	get_args(data, line, l, 0);
+	compare_cmd(data, builtins);
+}
+
+void declare(t_data *data, char *line)
+{
+	t_built_in builtins[] = {
+		{"echo", &echo},
+    	{"cd", &cd},
+    	{"pwd", &pwd},
+    	{"export", &export},
+    	{"unset", &unset},
+    	{"env", &env},
+    	{"exit", &b_exit},
+    	{NULL, NULL}
+	};
+	analyse_line(data, builtins, line);
+}
+
+void free_split(char **arr)
+{
+    int i;
+
+    i = 0;
+    if (!arr)
+        return;
+    while (arr[i])
+    {
+        free(arr[i]);
+        i++;
+    }
+    free(arr);
+}
+
+t_data *init_data(char **envp)
+{
+	t_data *data;
+	int i;
+	int count;
+
+	data = malloc(sizeof(t_data));
+	if(!data)
+		return (NULL);
+	data->args = NULL;
+	count = 0;
+	while(envp[count])
+		count++;
+	data->envp = malloc(sizeof(char *) * (count + 1));
+	if (!data->envp)
+	{
+		free(data);
+		return (NULL);
+	}
+	i = 0;
+	while(i < count)
+	{
+		data->envp[i] = ft_strdup(envp[i]);
+		i++;
+	}
+	data->envp[i] = NULL;
+	return (data);
+}
+
+void free_data(t_data *data)
+{
+	if (!data)
+		return;
+	if (data->args)
+		free_split(data->args);
+	if (data->envp)
+		free_split(data->envp);
+	free(data);
+}
+
+int main(int ac, char **av, char **envp)
+{
+	char *line;
+	t_data *data;
+
+	(void)ac;
+	(void)av;
+	data = init_data(envp);
+	if (!data)
+		return (1);
+	while(1)
+	{
+		line = readline("minishell> ");
+		if (line == NULL)
+		{
+			printf("exit\n");
+			break;
+		}
+		if (*line)
+			add_history(line);
+		if (data->args)
+            free_split(data->args);
+		declare(data, line);
+		free(line);
+	}
+	free_data(data);
+	return 0;
+}
