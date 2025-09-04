@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   builtins1.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 20:48:25 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 13:25:59 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,12 @@ int	cd(t_data *data)
 
 int export(t_data *data)
 {
-	int i;
 	int l;
 	char *name;
 	char *value;
 
 	name = NULL;
+	value = NULL;
 	l = 0;
 	if(!data->args[1])
 		print_env(data);

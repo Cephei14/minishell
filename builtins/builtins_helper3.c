@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 20:54:20 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 13:27:49 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,5 @@ char *get_name(char *str, int *i)
 	}
 	else
 		return (NULL);
+	return (NULL);
 }

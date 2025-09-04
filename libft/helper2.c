@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 14:01:13 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 20:40:38 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 13:30:28 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,18 @@ int escape_spaces(char *str, int i)
 	while(str[i] && str[i] == ' ')
 		i++;
 	return (i);
+}
+int	ft_isalpha(int c)
+{
+	if ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A'))
+		return (1);
+	else
+		return (0);
+}
+int	ft_isdigit(int c)
+{
+	if (c <= '9' && c >= '0')
+		return (1);
+	else
+		return (0);
 }

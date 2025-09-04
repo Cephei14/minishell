@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 20:49:54 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 13:27:00 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,21 @@
 
 int unset(t_data *data)
 {
+	(void)data;
 	printf("this is unset\n");
     return (0);
 }
 
 int env(t_data *data)
 {
+	(void)data;
 	printf("this is env\n");
     return (0);
 }
 
 int b_exit(t_data *data)
 {
+	(void)data;
 	printf("this is exit\n");
     return (0);
 }
