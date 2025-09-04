@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:34:01 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:57:49 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ void compare_cmd(t_data *data, t_built_in *builtins)
 		}
 		i++;
 	}
-	printf("minishell: %s: command not found\n", data->args[0]);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(data->args[0], 2);
+	ft_putstr_fd(": command not found\n", 2);
 	data->last_exit_status = 127;
 }
 

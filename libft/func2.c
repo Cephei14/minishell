@@ -6,12 +6,11 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 14:01:13 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 18:27:15 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:59:10 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {

@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:29:04 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 23:02:07 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,7 @@ int	cd(t_data *data)
 		return (1);
 	}
 	if (chdir(path))
-	{
-		printf("minishell: cd: %s: %s\n", path, strerror(errno));
-		free(old_pwd);
-		return (1);
-	}
+		return (cd_error(path, old_pwd));
 	update_pwd_vars(data, old_pwd);
 	return (0);
 }

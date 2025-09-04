@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 14:01:13 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 18:54:06 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:59:21 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,10 @@ long long	ft_atoi(const char *str)
 		return (INT_MIN);
 	}
 	return ((int)result);
+}
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	if (s)
+		write(fd, s, ft_strlen(s));
 }

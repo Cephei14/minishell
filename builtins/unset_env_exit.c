@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:24:45 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:56:57 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@ int	unset(t_data *data)
 	{
 		trimmed_arg = ft_strtrim(data->args[i], " \t\n\v\f\r");
 		if (!is_valid_identifier(trimmed_arg))
-			printf("minishell: unset: `%s': not a valid identifier\n", \
-				trimmed_arg);
+		{
+			ft_putstr_fd("minishell: unset: `", 2);
+			ft_putstr_fd(trimmed_arg, 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+		}
 		else
 		{
 			index_to_remove = find_env_var(data->envp, trimmed_arg);
@@ -62,7 +65,7 @@ int	b_exit(t_data *data)
 	{
 		if (data->args[2] != NULL)
 		{
-			printf("minishell: exit: too many arguments\n");
+			ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 			return (1);
 		}
 		exit_status = ft_atoi(data->args[1]);
@@ -70,8 +73,9 @@ int	b_exit(t_data *data)
 	}
 	else
 	{
-		printf("minishell: exit: %s: numeric argument required\n", \
-			data->args[1]);
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(data->args[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
 		exit(2);
 	}
 	return (0);

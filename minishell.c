@@ -6,9 +6,9 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 21:03:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:41:30 by rdhaibi          ###   ########.fr       */
-/*                                                                            */
+/*   Updated: 2025/09/04 22:/*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 
@@ -53,14 +53,13 @@ int main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	data = init_data(envp, 0, 0); //Here we create data structure and make a copy of the original environment variables that we have, you can write "export" in your shell to see them.
-	if (!data)
-		return (1);
 	while(1) //Infinite loop to keep waiting the commands.
 	{
 		line = readline("minishell> "); //(char *line) will have what we worte in the shell. (echo "abc" "def" $HOME -> || line = echo "abc" "def" $HOME ||)
 		if (line == NULL)
 		{
-			printf("exit\n");
+			if (isatty(STDIN_FILENO))
+				printf("exit\n");
 			break;
 		}
 		if (*line)

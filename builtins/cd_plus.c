@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:35:09 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 20:25:17 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 23:02:14 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,30 @@ char	*get_cd_path(t_data *data)
 	{
 		path = get_env_value(data, "HOME");
 		if (path == NULL)
-			printf("minishell: cd: HOME not set\n");
+			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 		return (path);
 	}
 	else if (ft_strcmp(data->args[1], "-") == 0)
 	{
 		path = get_env_value(data, "OLDPWD");
 		if (path == NULL)
-			printf("minishell: cd: OLDPWD not set\n");
+			ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
 		else
 			printf("%s\n", path);
 		return (path);
 	}
 	return (data->args[1]);
+}
+
+int	cd_error(char *path, char *old_pwd)
+{
+	ft_putstr_fd("minishell: cd: ", 2);
+	ft_putstr_fd(path, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+	free(old_pwd);
+	return (1);
 }
 
 void	update_pwd_vars(t_data *data, char *old_pwd)
@@ -48,5 +59,3 @@ void	update_pwd_vars(t_data *data, char *old_pwd)
 		free(new_pwd);
 	}
 }
-
-

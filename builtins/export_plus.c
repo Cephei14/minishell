@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:48:48 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 18:35:36 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:56:49 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,10 @@ void	handle_export_arg(t_data *data, char *arg)
 			free(value);
 	}
 	else
-		printf("minishell: export: `%s': not a valid identifier\n", trimmed_arg);
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(trimmed_arg, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+	}
 	free(trimmed_arg);
 }
