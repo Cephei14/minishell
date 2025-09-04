@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   args_with_$.c                                      :+:      :+:    :+:   */
+/*   args_before.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/03 20:34:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 21:38:49 by rdhaibi          ###   ########.fr       */
+/*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
+/*   Updated: 2025/09/04 22:34:01 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,74 +23,88 @@ void compare_cmd(t_data *data, t_built_in *builtins)
 	{
 		if (ft_strcmp(builtins[i].cmds, data->args[0]) == 0)
 		{
-			builtins[i].func(data);
+			data->last_exit_status = builtins[i].func(data);
 			return;
 		}
 		i++;
 	}
 	printf("minishell: %s: command not found\n", data->args[0]);
+	data->last_exit_status = 127;
 }
 
-void get_args(t_data *data, char *line, int l, int i)
+int	get_arg_end(char *line, int i)
 {
-	int j;
-	int start;
+	char quote_char;
 
-	data->args = malloc(sizeof(char *) * (l + 1));
-	if(!data->args)
-		return;
-	j = 0;
-	while(j < l)
+	quote_char = 0;
+	while (line[i] && line[i] != ' ' && line[i] != '\t')
 	{
-		i = escape_spaces(line, i);
-		start = i;
-		if(line[i] == 39)
-			i = escape_char(line, i, 39);
-		else if(line[i] == 34)
-			i = escape_char(line, i, 34);
-		else
+		if (line[i] == '\'' || line[i] == '\"')
 		{
-			while(line[i] && line[i] != ' ' && line[i] != 39 && line[i] != 34)
-				i++;
+			quote_char = line[i];
+			i++;
+			while (line[i] && line[i] != quote_char)
+				i++; // This loop can go past the end if no closing quote
+            if (line[i] == quote_char)
+                i++;
 		}
-		data->args[j] = ft_substr(line, start, i - start);
-		j++;
+		else
+			i++;
 	}
-	data->args[l] = NULL;
-	manage_env(data); //This function is to change normal args like ($HOME) to it's real value (/home/user), in the file "args_after_$.c" you can find next function..
+	return (i);
 }
 
 int nb_of_args(char *line)
 {
 	int i;
-	int k;
+	int count;
 
 	i = 0;
-	k = 0;
+	count = 0;
 	while(line[i])
 	{
-		i = escape_spaces(line, i);
-		if (!line[i])
-			break;
-		k++;
-		if (line[i] == 39)
-			i = escape_char(line, i, 39);
-		else if(line[i] == 34)
-			i = escape_char(line, i, 34);
-		else
+		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+			i++;
+		if (line[i])
 		{
-			while(line[i] && line[i] != ' ' && line[i] != 39 && line[i] != 34)
-				i++;
+			count++;
+			i = get_arg_end(line, i);
 		}
 	}
-	return (k);
+	return (count);
+}
+
+void get_args(t_data *data, char *line)
+{
+	int i;
+	int j;
+	int start;
+	int arg_count;
+
+	i = 0;
+	j = 0;
+	arg_count = nb_of_args(line);
+	data->args = malloc(sizeof(char *) * (arg_count + 1));
+	if(!data->args)
+		return;
+	while(j < arg_count)
+	{
+		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+			i++;
+		start = i;
+		i = get_arg_end(line, start);
+		data->args[j] = ft_substr(line, start, i - start);
+		j++;
+	}
+	data->args[j] = NULL;
 }
 
 void analyse_line(t_data *data, t_built_in *builtins, char *line)
 {
-	int l;
-
-	l = nb_of_args(line); //We should know how many args first in the line so we can allocate memory for them.( in this case : || echo "abc" "def" $HOME || there are 4)
-	get_args(data, line, l, 0); //Here i already put the args in the data structure (data->args) but without changing $HOME to it's real value.
-	compare_cmd(data, builtins);
+	get_args(data, line);
+	if (data->args && data->args[0])
+	{
+		manage_env(data);
+		compare_cmd(data, builtins);
+	}
 }

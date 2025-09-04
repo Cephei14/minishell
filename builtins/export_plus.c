@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:48:48 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 16:25:14 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 18:35:36 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,23 +29,26 @@ int	is_valid_identifier(char *name)
 	return (1);
 }
 
-// FIX: get_value now correctly handles cases with and without an '='
 char	*get_value(char *str, int i)
 {
 	int	l;
+	int flag;
 
-	// If there is an '=' at index i, the value starts at i + 1.
+	flag = 0;
 	if (str[i] == '=')
 	{
 		i++;
-		l = ft_strlen(str) - i;
+		if(str[i] == 34)
+		{
+			flag = 2;
+			i++;
+		}
+		l = ft_strlen(str) - i - flag;
 		return (ft_substr(str, i, l));
 	}
-	// If there is no '=', there is no value. Return NULL.
 	return (NULL);
 }
 
-// FIX: get_name now correctly validates the name and finds the '='
 char	*get_name(char *str, int *i)
 {
 	char	*name;
@@ -67,17 +70,20 @@ void	handle_export_arg(t_data *data, char *arg)
 	int		l;
 	char	*name;
 	char	*value;
+	char	*trimmed_arg;
 
+	trimmed_arg = ft_strtrim(arg, " \t\n\v\f\r");
 	l = 0;
-	name = get_name(arg, &l);
+	name = get_name(trimmed_arg, &l);
 	if (name)
 	{
-		value = get_value(arg, l);
+		value = get_value(trimmed_arg, l);
 		set_env_variable(data, name, value);
 		free(name);
 		if (value)
 			free(value);
 	}
 	else
-		printf("minishell: export: `%s': not a valid identifier\n", arg);
+		printf("minishell: export: `%s': not a valid identifier\n", trimmed_arg);
+	free(trimmed_arg);
 }

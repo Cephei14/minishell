@@ -6,32 +6,104 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:34:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 16:38:46 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 17:47:00 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void remove_quotes(t_data *data, int i)
+int	get_expanded_len(t_data *data, char *str, int *i)
 {
-	char *str;
-	int x;
-	int j;
-	int l;
+	char	*name;
+	char	*value;
+	int		len;
+	int		name_len;
 
-	x = 0;
-	j = 1;
-	l = ft_strlen(data->args[i]) - 2;
-	str = malloc(sizeof(char) * (l + 1));
-	while(x < l)
+	(*i)++;
+	name_len = env_len(str, *i);
+	name = ft_substr(str, *i, name_len);
+	value = get_env_value(data, name);
+	free(name);
+	*i += name_len;
+	len = 0;
+	if (value)
+		len = ft_strlen(value);
+	return (len);
+}
+
+int	calculate_final_len(t_data *data, char *arg)
+{
+	int		i;
+	int		len;
+	char	quote_char;
+
+	i = 0;
+	len = 0;
+	quote_char = 0;
+	while (arg[i])
 	{
-		str[x] = data->args[i][j];
-		x++;
-		j++;
+		if ((arg[i] == '\'' || arg[i] == '\"') && quote_char == 0)
+			quote_char = arg[i++];
+		else if (arg[i] == quote_char)
+		{
+			quote_char = 0;
+			i++;
+		}
+		else if (arg[i] == '$' && quote_char != '\'')
+			len += get_expanded_len(data, arg, &i);
+		else
+		{
+			len++;
+			i++;
+		}
 	}
-	str[x] = '\0';
-	free(data->args[i]);
-	data->args[i] = str;
+	return (len);
+}
+
+void	expand_and_copy(t_data *data, char *n_s, int *j, char *arg, int *i)
+{
+	char	*name;
+	char	*value;
+	int		name_len;
+
+	(*i)++;
+	name_len = env_len(arg, *i);
+	name = ft_substr(arg, *i, name_len);
+	value = get_env_value(data, name);
+	free(name);
+	if (value)
+	{
+		ft_strlcpy(&n_s[*j], value, ft_strlen(value) + 1);
+		*j += ft_strlen(value);
+	}
+	*i += name_len;
+}
+
+char	*build_clean_arg(t_data *data, char *arg, int i, int j)
+{
+	char	*new_arg;
+	char	quote_char;
+
+	new_arg = malloc(sizeof(char) * (calculate_final_len(data, arg) + 1));
+	if (!new_arg)
+		return (NULL);
+	quote_char = 0;
+	while (arg[i])
+	{
+		if ((arg[i] == '\'' || arg[i] == '\"') && quote_char == 0)
+			quote_char = arg[i++];
+		else if (arg[i] == quote_char)
+		{
+			quote_char = 0;
+			i++;
+		}
+		else if (arg[i] == '$' && quote_char != '\'')
+			expand_and_copy(data, new_arg, &j, arg, &i);
+		else
+			new_arg[j++] = arg[i++];
+	}
+	new_arg[j] = '\0';
+	return (new_arg);
 }
 
 int	env_len(char *str, int i)
@@ -47,81 +119,3 @@ int	env_len(char *str, int i)
 	return (l);
 }
 
-int	get_total_len(t_data *data, char *arg_str, int i, int total_len)
-{
-	int		l;
-	char	*env_name;
-	char	*env_value;
-
-	while (arg_str[i])
-	{
-		if (arg_str[i] == '$')
-		{
-			i++;
-			l = env_len(arg_str, i);
-			env_name = ft_substr(arg_str, i, l);
-			env_value = get_env_value(data, env_name); //$? maybe here.
-			if (env_value)
-				total_len += ft_strlen(env_value);
-			free(env_name);
-			i += l;
-		}
-		else
-		{
-			total_len++;
-			i++;
-		}
-	}
-	return (total_len);
-}
-
-char	*expand_argument(t_data *data, char *str, int len, int i, int x)
-{
-	char	*new_arg;
-	int		l;
-	char	*env_name;
-
-	new_arg = malloc(sizeof(char) * (len + 1));
-	if (!new_arg)
-		return (NULL);
-	while (str[i])
-	{
-		if (str[i] == '$')
-		{
-			i++;
-			l = env_len(str, i);
-			env_name = ft_substr(str, i, l);
-			copy_env_value(data, new_arg, &x, env_name);
-			free(env_name);
-			i += l;
-		}
-		else
-			new_arg[x++] = str[i++];
-	}
-	new_arg[x] = '\0';
-	return (new_arg);
-}
-
-void	manage_env(t_data *data)
-{
-	int		i;
-	char	*new_arg;
-	int		total_len;
-
-	i = 0;
-	while (data->args[i])
-	{
-		if (data->args[i][0] == 39)
-			remove_quotes(data, i);
-		else
-		{
-			if (data->args[i][0] == 34)
-				remove_quotes(data, i);
-			total_len = get_total_len(data, data->args[i], 0, 0);
-			new_arg = expand_argument(data, data->args[i], total_len, 0, 0);
-			free(data->args[i]);
-			data->args[i] = new_arg;
-		}
-		i++;
-	}
-}

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   export_print_sorted_env.c                          :+:      :+:    :+:   */
+/*   export_print.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 16:05:09 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:24:04 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	**duplicate_env(t_data *data)
 	i = 0;
 	while (i < count)
 	{
-		new_envp[i] = data->envp[i];
+		new_envp[i] = ft_strdup(data->envp[i]);
 		i++;
 	}
 	new_envp[i] = NULL;
@@ -93,5 +93,5 @@ void	print_env(t_data *data)
 		print_one_env_for_export(envp_copy[i]);
 		i++;
 	}
-	free(envp_copy);
+	free_split(envp_copy);
 }

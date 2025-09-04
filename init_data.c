@@ -6,23 +6,21 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:35:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 15:24:59 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 18:48:36 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_data *init_data(char **envp)
+t_data *init_data(char **envp, int i, int count)
 {
 	t_data *data;
-	int i;
-	int count;
 
 	data = malloc(sizeof(t_data));
 	if(!data)
 		return (NULL);
 	data->args = NULL;
-	count = 0;
+	data->last_exit_status = 0;
 	while(envp[count])
 		count++;
 	data->envp = malloc(sizeof(char *) * (count + 1));
@@ -31,7 +29,6 @@ t_data *init_data(char **envp)
 		free(data);
 		return (NULL);
 	}
-	i = 0;
 	while(i < count)
 	{
 		data->envp[i] = ft_strdup(envp[i]);

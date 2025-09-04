@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 15:59:24 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:29:04 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ int echo(t_data *data)
     i = 1;
     newline = 1;
 
-    if (data->args[1] && ft_strcmp(data->args[1], "-n") == 0)
-    {
-        newline = 0;
-        i = 2;
-    }
+	while (data->args[i] && ft_strcmp(data->args[i], "-n") == 0)
+	{
+	    newline = 0;
+	    i++;
+	}
     while (data->args[i])
     {
         printf("%s", data->args[i]);
@@ -72,7 +72,7 @@ int	cd(t_data *data)
 	}
 	if (chdir(path))
 	{
-		perror("minishell: cd");
+		printf("minishell: cd: %s: %s\n", path, strerror(errno));
 		free(old_pwd);
 		return (1);
 	}

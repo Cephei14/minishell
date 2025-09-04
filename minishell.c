@@ -6,11 +6,26 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 21:03:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 16:37:11 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 22:41:30 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	manage_env(t_data *data)
+{
+	int		i;
+	char	*clean_arg;
+
+	i = 0;
+	while (data->args[i])
+	{
+		clean_arg = build_clean_arg(data, data->args[i], 0, 0);
+		free(data->args[i]);
+		data->args[i] = clean_arg;
+		i++;
+	}
+}
 
 void	copy_env_value(t_data *data, char *new_arg, int *x, char *env_name)
 {
@@ -37,7 +52,7 @@ int main(int ac, char **av, char **envp)
 
 	(void)ac;
 	(void)av;
-	data = init_data(envp); //Here we create data structure and make a copy of the original environment variables that we have, you can write "export" in your shell to see them.
+	data = init_data(envp, 0, 0); //Here we create data structure and make a copy of the original environment variables that we have, you can write "export" in your shell to see them.
 	if (!data)
 		return (1);
 	while(1) //Infinite loop to keep waiting the commands.

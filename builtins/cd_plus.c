@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:35:09 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 16:01:54 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 20:25:17 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,18 @@ char	*get_cd_path(t_data *data)
 
 	if (data->args[1] == NULL)
 	{
-		path = getenv("HOME");
+		path = get_env_value(data, "HOME");
 		if (path == NULL)
 			printf("minishell: cd: HOME not set\n");
+		return (path);
+	}
+	else if (ft_strcmp(data->args[1], "-") == 0)
+	{
+		path = get_env_value(data, "OLDPWD");
+		if (path == NULL)
+			printf("minishell: cd: OLDPWD not set\n");
+		else
+			printf("%s\n", path);
 		return (path);
 	}
 	return (data->args[1]);
