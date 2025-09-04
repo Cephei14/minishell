@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:56:57 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 23:20:32 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,25 +58,26 @@ int	b_exit(t_data *data)
 {
 	long long	exit_status;
 
-	printf("exit\n");
 	if (data->args[1] == NULL)
+	{
+		printf("exit\n");
 		exit(data->last_exit_status);
-	if (is_numeric(data->args[1]))
-	{
-		if (data->args[2] != NULL)
-		{
-			ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-			return (1);
-		}
-		exit_status = ft_atoi(data->args[1]);
-		exit(exit_status % 256);
 	}
-	else
+	if (!is_numeric(data->args[1]))
 	{
+		printf("exit\n");
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(data->args[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
 		exit(2);
 	}
+	if (data->args[2] != NULL)
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		return (1);
+	}
+	printf("exit\n");
+	exit_status = ft_atoi(data->args[1]);
+	exit(exit_status % 256);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 23:02:07 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 23:25:33 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ int echo(t_data *data)
 
     i = 1;
     newline = 1;
-
-	while (data->args[i] && ft_strcmp(data->args[i], "-n") == 0)
+	while (data->args[i] && is_n_flag(data->args[i]))
 	{
 	    newline = 0;
 	    i++;

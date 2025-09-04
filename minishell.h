@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
+/*   Updated: 2025/09/04 23:19:57 by rdhaibi          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
@@ -62,6 +74,7 @@ int			pwd(t_data *data);
 int			export(t_data *data);
 int			unset(t_data *data);
 int			env(t_data *data);
+int			is_n_flag(const char *arg);
 int			env_len(char *str, int i);
 int			b_exit(t_data *data);
 int			escape_spaces(char *str, int i);

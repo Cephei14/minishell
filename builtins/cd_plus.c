@@ -6,11 +6,25 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:35:09 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 23:02:14 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 23:10:56 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	is_n_flag(const char *arg)
+{
+	int	i;
+
+	if (arg[0] != '-')
+		return (0);
+	i = 1;
+	while (arg[i] == 'n')
+		i++;
+	if (arg[i] == '\0')
+		return (1);
+	return (0);
+}
 
 char	*get_cd_path(t_data *data)
 {
