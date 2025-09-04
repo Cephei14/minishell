@@ -6,18 +6,18 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 21:03:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 21:39:22 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 16:37:11 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	copy_env_value(char *new_arg, int *x, char *env_name)
+void	copy_env_value(t_data *data, char *new_arg, int *x, char *env_name)
 {
 	char	*env_value;
 	int		j;
 
-	env_value = getenv(env_name);
+	env_value = get_env_value(data, env_name);
 	j = 0;
 	if (env_value)
 	{

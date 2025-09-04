@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins1.c                                        :+:      :+:    :+:   */
+/*   echo_pwd_cd_export.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 13:25:59 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 15:59:24 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ int pwd(t_data *data)
 	return (0);
 }
 
-
 int	cd(t_data *data)
 {
 	char	*path;
@@ -81,26 +80,20 @@ int	cd(t_data *data)
 	return (0);
 }
 
-
-int export(t_data *data)
+int	export(t_data *data)
 {
-	int l;
-	char *name;
-	char *value;
+	int	i;
 
-	name = NULL;
-	value = NULL;
-	l = 0;
-	if(!data->args[1])
-		print_env(data);
-	else
+	if (data->args[1] == NULL)
 	{
-		name = get_name(data->args[1], &l);
-		if(name)
-			value = get_value(data->args[1], l + 1);
-		else
-			set_env_variable(data, name, value);
+		print_env(data);
+		return (0);
 	}
-    return (0);
+	i = 1;
+	while (data->args[i])
+	{
+		handle_export_arg(data, data->args[i]);
+		i++;
+	}
+	return (0);
 }
-

@@ -1,16 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins_helper2.c                                 :+:      :+:    :+:   */
+/*   export_print_sorted_env.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 20:54:05 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 16:05:09 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	print_one_env_for_export(char *env_str)
+{
+	int	i;
+
+	i = 0;
+	printf("declare -x ");
+	while (env_str[i] && env_str[i] != '=')
+	{
+		printf("%c", env_str[i]);
+		i++;
+	}
+	if (env_str[i] == '=')
+		printf("=\"%s\"", &env_str[i + 1]);
+	printf("\n");
+}
 
 char	**duplicate_env(t_data *data)
 {
@@ -62,22 +78,6 @@ void	sort_env_array(char **envp_copy)
 	}
 }
 
-void	print_one_env_for_export(char *env_str)
-{
-	int	i;
-
-	i = 0;
-	printf("declare -x ");
-	while (env_str[i] && env_str[i] != '=')
-	{
-		printf("%c", env_str[i]);
-		i++;
-	}
-	if (env_str[i] == '=')
-		printf("=\"%s\"", &env_str[i + 1]);
-	printf("\n");
-}
-
 void	print_env(t_data *data)
 {
 	char	**envp_copy;
@@ -95,4 +95,3 @@ void	print_env(t_data *data)
 	}
 	free(envp_copy);
 }
-

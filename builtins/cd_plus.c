@@ -1,37 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins_helper3.c                                 :+:      :+:    :+:   */
+/*   cd_plus.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 13:27:49 by rdhaibi          ###   ########.fr       */
+/*   Created: 2025/09/04 15:35:09 by rdhaibi           #+#    #+#             */
+/*   Updated: 2025/09/04 16:01:54 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *get_value(char *str, int i)
+char	*get_cd_path(t_data *data)
 {
-	int l;
+	char	*path;
 
-	l = ft_strlen(str) - i;
-	return (ft_substr(str, i, l));
-}
-
-char *get_name(char *str, int *i)
-{
-	if((str[0] >= 'a' && str[0] <= 'z') || (str[0] >= 'A' && str[0] <= 'Z') || str[0] == '_')
+	if (data->args[1] == NULL)
 	{
-		while(str[*i])
-		{
-			if(str[*i] == '=')
-				return (ft_substr(str, 0, *i));
-			(*i)++;
-		}
+		path = getenv("HOME");
+		if (path == NULL)
+			printf("minishell: cd: HOME not set\n");
+		return (path);
 	}
-	else
-		return (NULL);
-	return (NULL);
+	return (data->args[1]);
 }
+
+void	update_pwd_vars(t_data *data, char *old_pwd)
+{
+	char	*new_pwd;
+
+	set_env_variable(data, "OLDPWD", old_pwd);
+	free(old_pwd);
+	new_pwd = getcwd(NULL, 0);
+	if (new_pwd)
+	{
+		set_env_variable(data, "PWD", new_pwd);
+		free(new_pwd);
+	}
+}
+
+

@@ -1,16 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins_helper1.c                                 :+:      :+:    :+:   */
+/*   update_env.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 20:53:16 by rdhaibi          ###   ########.fr       */
+/*   Created: 2025/09/04 16:00:52 by rdhaibi           #+#    #+#             */
+/*   Updated: 2025/09/04 16:31:59 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char	*get_env_value(t_data *data, char *var_name)
+{
+	int		index;
+	int		name_len;
+	char	*var_string;
+
+	index = find_env_var(data->envp, var_name);
+	if (index == -1)
+		return (NULL);
+	var_string = data->envp[index];
+	name_len = ft_strlen(var_name);
+	return (&var_string[name_len + 1]);
+}
 
 void	add_env_var(t_data *data, char *new_var_str)
 {
@@ -56,12 +70,17 @@ int	find_env_var(char **envp, char *var_name)
 void	set_env_variable(t_data *data, char *var_name, char *value)
 {
 	int		index;
-	char	*temp_str;
 	char	*new_var_str;
+	char	*temp_str;
 
-	temp_str = ft_strjoin(var_name, "=");
-	new_var_str = ft_strjoin(temp_str, value);
-	free(temp_str);
+	if (value == NULL)
+		new_var_str = ft_strdup(var_name);
+	else
+	{
+		temp_str = ft_strjoin(var_name, "=");
+		new_var_str = ft_strjoin(temp_str, value);
+		free(temp_str);
+	}
 	index = find_env_var(data->envp, var_name);
 	if (index == -1)
 		add_env_var(data, new_var_str);
@@ -70,32 +89,4 @@ void	set_env_variable(t_data *data, char *var_name, char *value)
 		free(data->envp[index]);
 		data->envp[index] = new_var_str;
 	}
-}
-
-void	update_pwd_vars(t_data *data, char *old_pwd)
-{
-	char	*new_pwd;
-
-	set_env_variable(data, "OLDPWD", old_pwd);
-	free(old_pwd);
-	new_pwd = getcwd(NULL, 0);
-	if (new_pwd)
-	{
-		set_env_variable(data, "PWD", new_pwd);
-		free(new_pwd);
-	}
-}
-
-char	*get_cd_path(t_data *data)
-{
-	char	*path;
-
-	if (data->args[1] == NULL)
-	{
-		path = getenv("HOME");
-		if (path == NULL)
-			printf("minishell: cd: HOME not set\n");
-		return (path);
-	}
-	return (data->args[1]);
 }

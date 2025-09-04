@@ -11,14 +11,15 @@ SRCS =	minishell.c \
 		free.c \
 		args_before.c \
 		args_after.c \
-		builtins/builtins1.c \
-		builtins/builtins2.c \
-		builtins/builtins_helper1.c \
-		builtins/builtins_helper2.c \
-		builtins/builtins_helper3.c \
-		libft/helper1.c \
-		libft/helper2.c \
-		libft/helper3.c
+		builtins/cd_plus.c \
+		builtins/echo_pwd_cd_export.c \
+		builtins/export_plus.c \
+		builtins/export_print_sorted_env.c \
+		builtins/unset_env_exit.c \
+		builtins/update_env.c \
+		libft/func1.c \
+		libft/func2.c \
+		libft/func3.c
 
 OBJS = $(SRCS:.c=.o)
 

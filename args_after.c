@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   args_after_$.c                                     :+:      :+:    :+:   */
+/*   args_after.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:34:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/03 21:06:11 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/04 16:38:46 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int	env_len(char *str, int i)
 	return (l);
 }
 
-int	get_total_len(char *arg_str, int i, int total_len)
+int	get_total_len(t_data *data, char *arg_str, int i, int total_len)
 {
 	int		l;
 	char	*env_name;
@@ -60,7 +60,7 @@ int	get_total_len(char *arg_str, int i, int total_len)
 			i++;
 			l = env_len(arg_str, i);
 			env_name = ft_substr(arg_str, i, l);
-			env_value = getenv(env_name); //$? maybe here.
+			env_value = get_env_value(data, env_name); //$? maybe here.
 			if (env_value)
 				total_len += ft_strlen(env_value);
 			free(env_name);
@@ -75,7 +75,7 @@ int	get_total_len(char *arg_str, int i, int total_len)
 	return (total_len);
 }
 
-char	*expand_argument(char *str, int len, int i, int x)
+char	*expand_argument(t_data *data, char *str, int len, int i, int x)
 {
 	char	*new_arg;
 	int		l;
@@ -91,7 +91,7 @@ char	*expand_argument(char *str, int len, int i, int x)
 			i++;
 			l = env_len(str, i);
 			env_name = ft_substr(str, i, l);
-			copy_env_value(new_arg, &x, env_name);
+			copy_env_value(data, new_arg, &x, env_name);
 			free(env_name);
 			i += l;
 		}
@@ -117,8 +117,8 @@ void	manage_env(t_data *data)
 		{
 			if (data->args[i][0] == 34)
 				remove_quotes(data, i);
-			total_len = get_total_len(data->args[i], 0, 0);
-			new_arg = expand_argument(data->args[i], total_len, 0, 0);
+			total_len = get_total_len(data, data->args[i], 0, 0);
+			new_arg = expand_argument(data, data->args[i], total_len, 0, 0);
 			free(data->args[i]);
 			data->args[i] = new_arg;
 		}
