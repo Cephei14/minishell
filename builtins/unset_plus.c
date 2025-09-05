@@ -6,20 +6,18 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 18:19:33 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 18:37:43 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:22:36 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	remove_var_from_env(t_data *data, int index_to_remove)
+void	remove_var_from_env(t_data *data, int index_to_remove, int count)
 {
 	char	**new_envp;
-	int		count;
 	int		i;
 	int		j;
 
-	count = 0;
 	while (data->envp[count])
 		count++;
 	new_envp = malloc(sizeof(char *) * count);

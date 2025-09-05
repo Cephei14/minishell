@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 15:31:33 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:23:10 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	unset(t_data *data, t_command *command)
 		{
 			index_to_remove = find_env_var(data->envp, trimmed_arg);
 			if (index_to_remove != -1)
-				remove_var_from_env(data, index_to_remove);
+				remove_var_from_env(data, index_to_remove, 0);
 		}
 		free(trimmed_arg);
 		i++;

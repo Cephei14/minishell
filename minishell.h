@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:18:18 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:23:23 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void		ft_putstr_fd(char *s, int fd);
 void		print_env(t_data *data);
 void		handle_export_arg(t_data *data, t_command *command ,char *arg);
 void		expand_and_copy(t_data *data, char *n_s, int *j, char *arg, int *i);
-void		remove_var_from_env(t_data *data, int index_to_remove);
+void		remove_var_from_env(t_data *data, int index_to_remove, int count);
 int			find_env_var(char **envp, char *var_name);
 int			calculate_final_len(t_data *data, char *arg);
 int			cd_error(char *path, char *old_pwd);

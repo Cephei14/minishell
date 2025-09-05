@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 15:53:15 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:27:26 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,13 +82,32 @@ int	cd(t_data *data,  t_command *command)
 	return (0);
 }
 
+static int	process_export_arg(t_data *data, t_command * command,char *arg)
+{
+	char	*name;
+	char	*eq_pos;
+
+	eq_pos = ft_strchr(arg, '=');
+	if (eq_pos)
+		name = ft_substr(arg, 0, eq_pos - arg);
+	else
+		name = ft_strdup(arg);
+	if (!is_valid_identifier(name))
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+		free(name);
+		return (1);
+	}
+	handle_export_arg(data, command, arg); // Assuming handle_export_arg only needs arg
+	free(name);
+	return (0);
+}
 int	export(t_data *data, t_command *command)
 {
 	int	i;
-	int		ret_status;
-	char	*arg;
-	char	*name;
-	char	*eq_pos;
+	int	ret_status;
 
 	ret_status = 0;
 	if (command->args[1] == NULL)
@@ -99,22 +118,8 @@ int	export(t_data *data, t_command *command)
 	i = 1;
 	while (command->args[i])
 	{
-		arg = command->args[i];
-		eq_pos = ft_strchr(arg, '=');
-		if (eq_pos)
-			name = ft_substr(arg, 0, eq_pos - arg);
-		else
-			name = ft_strdup(arg);
-		if (!is_valid_identifier(name))
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(arg, 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
+		if (process_export_arg(data, command, command->args[i]) != 0)
 			ret_status = 1;
-		}
-		else
-			handle_export_arg(data, command, arg);
-		free(name);
 		i++;
 	}
 	return (ret_status);
