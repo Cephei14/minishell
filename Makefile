@@ -26,7 +26,8 @@ SRCS =	minishell.c \
 		libft/func2.c \
 		libft/func3.c \
 		libft/func4.c \
-		libft/func5.c
+		libft/func5.c \
+		libft/func6.c
 
 OBJS = $(SRCS:.c=.o)
 

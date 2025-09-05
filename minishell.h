@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 18:16:23 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:19:03 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,8 @@ char		*build_clean_arg(t_data *data, char *arg, char quote_char);
 void		handle_expansion(t_data *d, char *n_s, char *arg, t_state *st);
 int			calculate_final_len(t_data *data, char *arg);
 int			get_expanded_len(t_data *data, char *str, int *i);
-void		expand_variable(t_data *data, char *new_str, char *arg, t_state *st);
+void		expand_variable(t_data *data, char *new_str, 
+				char *arg, t_state *st);
 void		expand_exit_status(t_data *data, char *new_str, t_state *st);
 int			env_len(char *str, int i);
 int			nbr_len(int n);
@@ -141,9 +142,11 @@ int			find_env_var(char **envp, char *var_name);
 
 /* executor */
 void		executor(t_data *data, t_command *command, t_built_in *builtins);
-void		execute_parent_builtin(t_data *data, t_command *command, t_built_in *builtins);
+void		execute_parent_builtin(t_data *data, t_command *command,
+				t_built_in *builtins);
 int			is_parent_builtin(t_command *command);
-void		execute_child(t_data *data, t_command *command, t_built_in *builtins);
+void		execute_child(t_data *data, t_command *command,
+				t_built_in *builtins);
 char		*get_cmd_path(t_data *data, char *cmd);
 int			handle_redirections(t_command *command);
 
@@ -151,7 +154,8 @@ int			handle_redirections(t_command *command);
 t_data		*init_data(char **envp, int i, int count);
 t_command	*init_command(void);
 void		declare(t_data *data, t_command *command, char *line);
-void		analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *line);
+void		analyse_line(t_data *data, t_built_in *builtins,
+				t_command *command, char *line);
 void		free_data_command(t_data *data, t_command *command);
 void		free_command(t_command *command);
 void		free_redirs(t_redir *redirs);

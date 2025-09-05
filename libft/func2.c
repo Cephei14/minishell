@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 14:01:13 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:59:10 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:29:28 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,23 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-int escape_char(char *line, int i, char c)
+int	escape_char(char *line, int i, char c)
 {
 	i++;
-	while(line[i] && line[i] != c)
+	while (line[i] && line[i] != c)
 		i++;
 	if (line[i] == c)
 		i++;
-	return i;
+	return (i);
 }
 
-int escape_spaces(char *str, int i)
+int	escape_spaces(char *str, int i)
 {
-	while(str[i] && str[i] == ' ')
+	while (str[i] && str[i] == ' ')
 		i++;
 	return (i);
 }
+
 int	ft_isalpha(int c)
 {
 	if ((c <= 'z' && c >= 'a') || (c <= 'Z' && c >= 'A'))
@@ -51,6 +52,7 @@ int	ft_isalpha(int c)
 	else
 		return (0);
 }
+
 int	ft_isdigit(int c)
 {
 	if (c <= '9' && c >= '0')
