@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:35:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 13:37:23 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:55:47 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,7 @@ t_command *init_command(char **envp, int i, int count)
 	if (!command)
 		return (NULL);
 	command->args = NULL;
-	command->input_file = NULL;
-	command->output_file = NULL;
-	command->is_append = 0;
+	command->redirs = NULL;
 	command->next = NULL;
 	return (command);
 }

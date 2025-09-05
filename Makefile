@@ -9,6 +9,7 @@ LDFLAGS = -lreadline
 SRCS =	minishell.c \
 		init_data.c \
 		free.c \
+		executor.c \
 		args_before.c \
 		builtins/cd_plus.c \
 		builtins/echo_pwd_cd_export.c \

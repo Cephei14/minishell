@@ -6,33 +6,11 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 13:57:44 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:55:47 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void compare_cmd(t_data *data, t_command *command, t_built_in *builtins)
-{
-	int i;
-
-	i = 0;
-	if (command->args == NULL || command->args[0] == NULL)
-    	return;
-	while(builtins[i].cmds)
-	{
-		if (ft_strcmp(builtins[i].cmds, command->args[0]) == 0)
-		{
-			data->last_exit_status = builtins[i].func(data, command);
-			return;
-		}
-		i++;
-	}
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(command->args[0], 2);
-	ft_putstr_fd(": command not found\n", 2);
-	data->last_exit_status = 127;
-}
 
 /********************************************fill_command - start **************************************************/
 int	is_operator(char *arg)
@@ -64,6 +42,34 @@ int	count_cmd_args(char **args, int start)
 	return (count);
 }
 
+static t_redir	*new_redir(char *filename, t_redir_type type)
+{
+	t_redir	*redir;
+
+	redir = malloc(sizeof(t_redir));
+	if (!redir)
+		return (NULL);
+	redir->filename = ft_strdup(filename);
+	redir->type = type;
+	redir->next = NULL;
+	return (redir);
+}
+
+static void	add_redir_back(t_command *cmd, t_redir *redir)
+{
+	t_redir	*current;
+
+	if (!cmd->redirs)
+	{
+		cmd->redirs = redir;
+		return ;
+	}
+	current = cmd->redirs;
+	while (current->next)
+		current = current->next;
+	current->next = redir;
+}
+
 int	parse_one_command(t_data *data, t_command *cmd, int i)
 {
 	int	arg_idx;
@@ -71,17 +77,23 @@ int	parse_one_command(t_data *data, t_command *cmd, int i)
 	arg_idx = 0;
 	while (data->args[i] && ft_strcmp(data->args[i], "|") != 0)
 	{
-		if (ft_strcmp(data->args[i], ">") == 0)
-			cmd->output_file = data->args[++i];
-		else if (ft_strcmp(data->args[i], ">>") == 0)
+		if (is_operator(data->args[i]))
 		{
-			cmd->output_file = data->args[++i];
-			cmd->is_append = 1;
+			if (!data->args[i + 1] || is_operator(data->args[i + 1]))
+			{
+				ft_putstr_fd("minishell: syntax error\n", 2);
+				data->last_exit_status = 2;
+				return (i + 1);
+			}
 		}
+		if (ft_strcmp(data->args[i], ">") == 0)
+			add_redir_back(cmd, new_redir(data->args[++i], REDIR_OUT));
+		else if (ft_strcmp(data->args[i], ">>") == 0)
+			add_redir_back(cmd, new_redir(data->args[++i], REDIR_APPEND));
 		else if (ft_strcmp(data->args[i], "<") == 0)
-			cmd->input_file = data->args[++i];
+			add_redir_back(cmd, new_redir(data->args[++i], REDIR_IN));
 		else if (ft_strcmp(data->args[i], "<<") == 0)
-			cmd->input_file = data->args[++i];
+			add_redir_back(cmd, new_redir(data->args[++i], REDIR_HEREDOC));
 		else
 			cmd->args[arg_idx++] = ft_strdup(data->args[i]);
 		i++;
@@ -147,6 +159,21 @@ char	*get_env_value(t_data *data, char *var_name)
 	return (NULL);
 }
 
+static int	nbr_len(int n)
+{
+	int	len;
+
+	len = 0;
+	if (n <= 0)
+		len++;
+	while (n != 0)
+	{
+		n /= 10;
+		len++;
+	}
+	return (len);
+}
+
 int	env_len(char *str, int i)
 {
 	int	l;
@@ -164,9 +191,24 @@ void	expand_and_copy(t_data *data, char *n_s, int *j, char *arg, int *i)
 	char	*name;
 	char	*value;
 	int		name_len;
+	char	*exit_status_str;
 
 	(*i)++;
+	if (arg[*i] == '?')
+	{
+		exit_status_str = ft_itoa(data->last_exit_status);
+		ft_strlcpy(&n_s[*j], exit_status_str, ft_strlen(exit_status_str) + 1);
+		*j += ft_strlen(exit_status_str);
+		free(exit_status_str);
+		(*i)++;
+		return ;
+	}
 	name_len = env_len(arg, *i);
+	if (name_len == 0)
+	{
+		n_s[(*j)++] = '$';
+		return ;
+	}
 	name = ft_substr(arg, *i, name_len);
 	value = get_env_value(data, name);
 	free(name);
@@ -186,7 +228,14 @@ int	get_expanded_len(t_data *data, char *str, int *i)
 	int		name_len;
 
 	(*i)++;
+	if (str[*i] == '?')
+	{
+		(*i)++;
+		return (nbr_len(data->last_exit_status));
+	}
 	name_len = env_len(str, *i);
+	if (name_len == 0)
+		return (1);
 	name = ft_substr(str, *i, name_len);
 	value = get_env_value(data, name);
 	free(name);
@@ -268,86 +317,143 @@ void	manage_env(t_data *data)
 	}
 }
 /********************************************manage_env - end **************************************************/
-
-/********************************************get args - start **************************************************/
-int	get_arg_end(char *line, int i)
+void	remove_empty_args(t_data *data)
 {
-	char quote_char;
-
-	quote_char = 0;
-	while (line[i] && line[i] != ' ' && line[i] != '\t')
-	{
-		if (line[i] == '\'' || line[i] == '\"')
-		{
-			quote_char = line[i];
-			i++;
-			while (line[i] && line[i] != quote_char)
-				i++;
-            if (line[i] == quote_char)
-                i++;
-		}
-		else
-			i++;
-	}
-	return (i);
-}
-
-int nb_of_args(char *line)
-{
-	int i;
-	int count;
+	int		i;
+	int		j;
+	int		count;
+	char	**new_args;
 
 	i = 0;
 	count = 0;
-	while(line[i])
+	while (data->args && data->args[i])
+	{
+		if (data->args[i][0] != '\0')
+			count++;
+		i++;
+	}
+	new_args = malloc(sizeof(char *) * (count + 1));
+	if (!new_args)
+		return ;
+	i = 0;
+	j = 0;
+	while (data->args && data->args[i])
+	{
+		if (data->args[i][0] != '\0')
+			new_args[j++] = data->args[i];
+		else
+			free(data->args[i]);
+		i++;
+	}
+	new_args[j] = NULL;
+	free(data->args);
+	data->args = new_args;
+}
+
+static int	is_metachar(char c)
+{
+	return (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>');
+}
+
+static int	count_tokens(char *line)
+{
+	int		i;
+	int		count;
+	char	quote_char;
+
+	i = 0;
+	count = 0;
+	while (line[i])
 	{
 		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 			i++;
 		if (line[i])
 		{
 			count++;
-			i = get_arg_end(line, i);
+			if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+			{
+				if ((line[i] == '<' && line[i + 1] == '<')
+					|| (line[i] == '>' && line[i + 1] == '>'))
+					i += 2;
+				else
+					i++;
+			}
+			else
+			{
+				while (line[i] && !is_metachar(line[i]))
+				{
+					if (line[i] == '\'' || line[i] == '\"')
+					{
+						quote_char = line[i++];
+						while (line[i] && line[i] != quote_char)
+							i++;
+						if (line[i])
+							i++;
+					}
+					else
+						i++;
+				}
+			}
 		}
 	}
 	return (count);
 }
 
-void get_args(t_data *data, char *line)
+void	get_args(t_data *data, char *line)
 {
-	int i;
-	int j;
-	int start;
-	int arg_count;
+	int		i;
+	int		j;
+	int		start;
+	int		arg_count;
+	char	quote_char;
 
 	i = 0;
 	j = 0;
-	arg_count = nb_of_args(line);
+	arg_count = count_tokens(line);
 	data->args = malloc(sizeof(char *) * (arg_count + 1));
-	if(!data->args)
-		return;
-	while(j < arg_count)
+	if (!data->args)
+		return ;
+	while (j < arg_count)
 	{
 		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 			i++;
 		start = i;
-		i = get_arg_end(line, start);
+		if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+		{
+			if ((line[i] == '<' && line[i + 1] == '<')
+				|| (line[i] == '>' && line[i + 1] == '>'))
+				i += 2;
+			else
+				i++;
+		}
+		else
+		{
+			while (line[i] && !is_metachar(line[i]))
+			{
+				if (line[i] == '\'' || line[i] == '\"')
+				{
+					quote_char = line[i++];
+					while (line[i] && line[i] != quote_char)
+						i++;
+					if (line[i])
+						i++;
+				}
+				else
+					i++;
+			}
+		}
 		data->args[j] = ft_substr(line, start, i - start);
 		j++;
 	}
 	data->args[j] = NULL;
 }
 /********************************************get args - end **************************************************/
+
 void analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *line)
 {
-	t_command *tmp;
-	
 	get_args(data, line); //Transforming the line we got from readline to args, and they stay like they are
 	manage_env(data); //extending the args to their real value $USER will became cepheus
+	remove_empty_args(data);
 	fill_commands(data, command, 0); //moving each arg to the command structure, each command in one linked list while taking care and getting based on pipes and redirections
-	tmp = command;
-	while(tmp)
-	{
-		compare_cmd(data, tmp, builtins); //i should go from one linked list to another one and compare them to the builtins and execute them
-		tmp = tmp->next;
-	}
+	executor(data, command, builtins);
 }

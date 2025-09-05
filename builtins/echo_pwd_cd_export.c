@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 14:03:13 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:53:15 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@ int echo(t_data *data, t_command *command)
     int i;
     int newline;
 
+	(void)data;
     i = 1;
     newline = 1;
-	while (command->args[i] && is_n_flag(data->args[i]))
+	while (command->args[i] && is_n_flag(command->args[i]))
 	{
 	    newline = 0;
 	    i++;
@@ -58,14 +59,18 @@ int	cd(t_data *data,  t_command *command)
 	char	*path;
 	char	*old_pwd;
 
-	(void)command;
+	if (command->args[2] != NULL)
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
+		return (1);
+	}
 	old_pwd = getcwd(NULL, 0);
 	if (!old_pwd)
 	{
 		perror("minishell: cd");
 		return (1);
 	}
-	path = get_cd_path(data);
+	path = get_cd_path(data, command);
 	if (!path)
 	{
 		free(old_pwd);
@@ -80,7 +85,12 @@ int	cd(t_data *data,  t_command *command)
 int	export(t_data *data, t_command *command)
 {
 	int	i;
+	int		ret_status;
+	char	*arg;
+	char	*name;
+	char	*eq_pos;
 
+	ret_status = 0;
 	if (command->args[1] == NULL)
 	{
 		print_env(data);
@@ -89,8 +99,23 @@ int	export(t_data *data, t_command *command)
 	i = 1;
 	while (command->args[i])
 	{
-		handle_export_arg(data, command, command->args[i]);
+		arg = command->args[i];
+		eq_pos = ft_strchr(arg, '=');
+		if (eq_pos)
+			name = ft_substr(arg, 0, eq_pos - arg);
+		else
+			name = ft_strdup(arg);
+		if (!is_valid_identifier(name))
+		{
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(arg, 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			ret_status = 1;
+		}
+		else
+			handle_export_arg(data, command, arg);
+		free(name);
 		i++;
 	}
-	return (0);
+	return (ret_status);
 }

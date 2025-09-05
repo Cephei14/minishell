@@ -6,11 +6,26 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:33:39 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 14:02:35 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:55:49 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	free_redirs(t_redir *redirs)
+{
+	t_redir	*current;
+	t_redir	*next;
+
+	current = redirs;
+	while (current)
+	{
+		next = current->next;
+		free(current->filename);
+		free(current);
+		current = next;
+	}
+}
 
 void free_command(t_command *command)
 {
@@ -23,6 +38,8 @@ void free_command(t_command *command)
 		next = current->next;
 		if (current->args)
 			free_split(current->args);
+		if (current->redirs)
+			free_redirs(current->redirs);
 		free(current);
 		current = next;
 	}

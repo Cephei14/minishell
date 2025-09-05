@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 14:02:36 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:55:46 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -33,12 +35,25 @@ typedef	struct s_data
 	char				**envp;
 }	t_data;
 
+typedef enum e_redir_type
+{
+	REDIR_IN,
+	REDIR_OUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC
+}	t_redir_type;
+
+typedef struct s_redir
+{
+	t_redir_type	type;
+	char			*filename;
+	struct s_redir	*next;
+}	t_redir;
+
 typedef struct s_command
 {
 	char				**args;
-	char				*input_file;
-	char				*output_file;
-	int					is_append;
+	t_redir				*redirs;
 	struct s_command	*next;
 }	t_command;
 
@@ -52,7 +67,7 @@ typedef	struct s_built_in
 
 void		add_env_var(t_data *data, char *new_var_str);
 void		set_env_variable(t_data *data, char *var_name, char *value);
-void		compare_cmd(t_data *data, t_command *command, t_built_in *builtins);
+void		executor(t_data *data, t_command *command, t_built_in *builtins);
 void		get_args(t_data *data, char *line);
 void		manage_env(t_data *data);
 void		analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *line);
@@ -60,6 +75,7 @@ void		declare(t_data *data, t_command *command, char *line);
 void		free_split(char **arr);
 void		free_command(t_command *command);
 void		free_data_command(t_data *data, t_command *command);
+void		print_commands(t_command *command);//--------------remove later
 void		copy_env_value(t_data *data, char *new_arg, int *x, char *env_name);
 void		update_pwd_vars(t_data *data, char *old_pwd);
 void		sort_env_array(char **envp_copy);
@@ -94,13 +110,14 @@ int			ft_isalnum(char c);
 int			is_valid_identifier(char *name);
 int			get_arg_end(char *line, int i);
 int			is_numeric(char *str);
+char		*ft_itoa(int n);
 char		**ft_split(char const *s, char c);
 char		**duplicate_env(t_data *data);
 char		*ft_strdup(const char *s1);
 char		*ft_strchr(const char *s, int c);
 char		*ft_strjoin(char const *s1, char const *s2);
 char		*ft_substr(char const *s, unsigned int start, size_t len);
-char		*get_cd_path(t_data *data);
+char		*get_cd_path(t_data *data, t_command *command);
 char		*get_value(char *str, int i);
 char		*get_name(char *str, int *i);
 char		*get_env_value(t_data *data, char *var_name);

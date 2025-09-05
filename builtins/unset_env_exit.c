@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 14:04:12 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:31:33 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	b_exit(t_data *data, t_command *command)
 		ft_putstr_fd(": numeric argument required\n", 2);
 		exit(2);
 	}
-	if (data->args[2] != NULL)
+	if (command->args[2] != NULL)
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		return (1);

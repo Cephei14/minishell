@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:35:09 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 13:47:25 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 15:31:19 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,18 @@ int	is_n_flag(const char *arg)
 	return (0);
 }
 
-char	*get_cd_path(t_data *data)
+char	*get_cd_path(t_data *data, t_command *command)
 {
 	char	*path;
 
-	if (data->args[1] == NULL)
+	if (command->args[1] == NULL)
 	{
 		path = get_env_value(data, "HOME");
 		if (path == NULL)
 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 		return (path);
 	}
-	else if (ft_strcmp(data->args[1], "-") == 0)
+	else if (ft_strcmp(command->args[1], "-") == 0)
 	{
 		path = get_env_value(data, "OLDPWD");
 		if (path == NULL)
@@ -46,7 +46,7 @@ char	*get_cd_path(t_data *data)
 			printf("%s\n", path);
 		return (path);
 	}
-	return (data->args[1]);
+	return (command->args[1]);
 }
 
 int	cd_error(char *path, char *old_pwd)
