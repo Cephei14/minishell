@@ -7,10 +7,14 @@ CFLAGS = -Wall -Wextra -Werror -I.
 LDFLAGS = -lreadline
 
 SRCS =	minishell.c \
-		init_data.c \
-		free.c \
 		executor.c \
-		args_before.c \
+		expand_args1.c \
+		expand_args2.c \
+		fill_command.c \
+		free.c \
+		get_args.c \
+		init_data.c \
+		line_utils.c \
 		builtins/cd_plus.c \
 		builtins/echo_pwd_cd_export.c \
 		builtins/export_plus.c \

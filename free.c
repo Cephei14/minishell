@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:33:39 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:21:09 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:53:48 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	free_redirs(t_redir *redirs)
 	}
 }
 
-void free_command(t_command *command)
+void	free_command(t_command *command)
 {
 	t_command	*current;
 	t_command	*next;
@@ -45,10 +45,10 @@ void free_command(t_command *command)
 	}
 }
 
-void free_data_command(t_data *data, t_command *command)
+void	free_data_command(t_data *data, t_command *command)
 {
 	if (!data)
-		return;
+		return ;
 	if (data->args)
 		free_split(data->args);
 	if (data->envp)
@@ -57,17 +57,17 @@ void free_data_command(t_data *data, t_command *command)
 	free_command(command);
 }
 
-void free_split(char **arr)
+void	free_split(char **arr)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    if (!arr)
-        return;
-    while (arr[i])
-    {
-        free(arr[i]);
-        i++;
-    }
-    free(arr);
+	i = 0;
+	if (!arr)
+		return ;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
 }
