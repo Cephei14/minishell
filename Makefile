@@ -10,7 +10,6 @@ SRCS =	minishell.c \
 		init_data.c \
 		free.c \
 		args_before.c \
-		args_after.c \
 		builtins/cd_plus.c \
 		builtins/echo_pwd_cd_export.c \
 		builtins/export_plus.c \
