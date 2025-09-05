@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 15:55:47 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:03:09 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,19 @@ static void	add_redir_back(t_command *cmd, t_redir *redir)
 	current->next = redir;
 }
 
+static int	handle_redirection(t_command *cmd, char **args, int i)
+{
+	if (ft_strcmp(args[i], ">") == 0)
+		add_redir_back(cmd, new_redir(args[i + 1], REDIR_OUT));
+	else if (ft_strcmp(args[i], ">>") == 0)
+		add_redir_back(cmd, new_redir(args[i + 1], REDIR_APPEND));
+	else if (ft_strcmp(args[i], "<") == 0)
+		add_redir_back(cmd, new_redir(args[i + 1], REDIR_IN));
+	else if (ft_strcmp(args[i], "<<") == 0)
+		add_redir_back(cmd, new_redir(args[i + 1], REDIR_HEREDOC));
+	return (i + 2);
+}
+
 int	parse_one_command(t_data *data, t_command *cmd, int i)
 {
 	int	arg_idx;
@@ -85,18 +98,12 @@ int	parse_one_command(t_data *data, t_command *cmd, int i)
 				data->last_exit_status = 2;
 				return (i + 1);
 			}
+			i = handle_redirection(cmd, data->args, i);
 		}
-		if (ft_strcmp(data->args[i], ">") == 0)
-			add_redir_back(cmd, new_redir(data->args[++i], REDIR_OUT));
-		else if (ft_strcmp(data->args[i], ">>") == 0)
-			add_redir_back(cmd, new_redir(data->args[++i], REDIR_APPEND));
-		else if (ft_strcmp(data->args[i], "<") == 0)
-			add_redir_back(cmd, new_redir(data->args[++i], REDIR_IN));
-		else if (ft_strcmp(data->args[i], "<<") == 0)
-			add_redir_back(cmd, new_redir(data->args[++i], REDIR_HEREDOC));
 		else
-			cmd->args[arg_idx++] = ft_strdup(data->args[i]);
-		i++;
+		{
+			cmd->args[arg_idx++] = ft_strdup(data->args[i++]);
+		}
 	}
 	cmd->args[arg_idx] = NULL;
 	return (i);
@@ -118,7 +125,7 @@ void	fill_commands(t_data *data, t_command *command, int i)
 		if (data->args[i] && ft_strcmp(data->args[i], "|") == 0)
 		{
 			i++;
-			current_cmd->next = init_command(NULL, 0, 0);
+			current_cmd->next = init_command();
 			current_cmd = current_cmd->next;
 		}
 	}
@@ -317,14 +324,11 @@ void	manage_env(t_data *data)
 	}
 }
 /********************************************manage_env - end **************************************************/
-void	remove_empty_args(t_data *data)
+void	remove_empty_args(t_data *data, int i, int j)
 {
-	int		i;
-	int		j;
 	int		count;
 	char	**new_args;
 
-	i = 0;
 	count = 0;
 	while (data->args && data->args[i])
 	{
@@ -336,7 +340,6 @@ void	remove_empty_args(t_data *data)
 	if (!new_args)
 		return ;
 	i = 0;
-	j = 0;
 	while (data->args && data->args[i])
 	{
 		if (data->args[i][0] != '\0')
@@ -355,11 +358,37 @@ static int	is_metachar(char c)
 	return (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>');
 }
 
+static int	find_token_end(char *line, int i)
+{
+	char	quote_char;
+
+	if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+	{
+		if ((line[i] == '<' && line[i + 1] == '<')
+			|| (line[i] == '>' && line[i + 1] == '>'))
+			return (i + 2);
+		return (i + 1);
+	}
+	while (line[i] && !is_metachar(line[i]))
+	{
+		if (line[i] == '\'' || line[i] == '\"')
+		{
+			quote_char = line[i++];
+			while (line[i] && line[i] != quote_char)
+				i++;
+			if (line[i])
+				i++;
+		}
+		else
+			i++;
+	}
+	return (i);
+}
+
 static int	count_tokens(char *line)
 {
-	int		i;
-	int		count;
-	char	quote_char;
+	int	i;
+	int	count;
 
 	i = 0;
 	count = 0;
@@ -370,30 +399,7 @@ static int	count_tokens(char *line)
 		if (line[i])
 		{
 			count++;
-			if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-			{
-				if ((line[i] == '<' && line[i + 1] == '<')
-					|| (line[i] == '>' && line[i + 1] == '>'))
-					i += 2;
-				else
-					i++;
-			}
-			else
-			{
-				while (line[i] && !is_metachar(line[i]))
-				{
-					if (line[i] == '\'' || line[i] == '\"')
-					{
-						quote_char = line[i++];
-						while (line[i] && line[i] != quote_char)
-							i++;
-						if (line[i])
-							i++;
-					}
-					else
-						i++;
-				}
-			}
+			i = find_token_end(line, i);
 		}
 	}
 	return (count);
@@ -401,11 +407,10 @@ static int	count_tokens(char *line)
 
 void	get_args(t_data *data, char *line)
 {
-	int		i;
-	int		j;
-	int		start;
-	int		arg_count;
-	char	quote_char;
+	int	i;
+	int	j;
+	int	start;
+	int	arg_count;
 
 	i = 0;
 	j = 0;
@@ -418,30 +423,7 @@ void	get_args(t_data *data, char *line)
 		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 			i++;
 		start = i;
-		if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-		{
-			if ((line[i] == '<' && line[i + 1] == '<')
-				|| (line[i] == '>' && line[i + 1] == '>'))
-				i += 2;
-			else
-				i++;
-		}
-		else
-		{
-			while (line[i] && !is_metachar(line[i]))
-			{
-				if (line[i] == '\'' || line[i] == '\"')
-				{
-					quote_char = line[i++];
-					while (line[i] && line[i] != quote_char)
-						i++;
-					if (line[i])
-						i++;
-				}
-				else
-					i++;
-			}
-		}
+		i = find_token_end(line, i);
 		data->args[j] = ft_substr(line, start, i - start);
 		j++;
 	}
@@ -453,7 +435,7 @@ void analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *
 {
 	get_args(data, line); //Transforming the line we got from readline to args, and they stay like they are
 	manage_env(data); //extending the args to their real value $USER will became cepheus
-	remove_empty_args(data);
+	remove_empty_args(data, 0, 0);
 	fill_commands(data, command, 0); //moving each arg to the command structure, each command in one linked list while taking care and getting based on pipes and redirections
 	executor(data, command, builtins);
 }

@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 15:55:46 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 16:44:03 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,6 @@ void		declare(t_data *data, t_command *command, char *line);
 void		free_split(char **arr);
 void		free_command(t_command *command);
 void		free_data_command(t_data *data, t_command *command);
-void		print_commands(t_command *command);//--------------remove later
-void		copy_env_value(t_data *data, char *new_arg, int *x, char *env_name);
 void		update_pwd_vars(t_data *data, char *old_pwd);
 void		sort_env_array(char **envp_copy);
 void		print_one_env_for_export(char *env_str);
@@ -126,7 +124,7 @@ char		*ft_strtrim(char const *s1, char const *set);
 long long	ft_atoi(const char *str);
 size_t		ft_strlcpy(char *dest, const char *src, size_t n);
 size_t		ft_strlen(const char *str);
-t_command	*init_command(char **envp, int i, int count);
+t_command	*init_command(void);
 t_data		*init_data(char **envp, int i, int count);
 
 #endif	

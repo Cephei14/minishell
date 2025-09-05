@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:35:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 15:55:47 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 16:44:04 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,9 @@ t_data *init_data(char **envp, int i, int count)
 	return (data);
 }
 
-t_command *init_command(char **envp, int i, int count)
+t_command *init_command(void)
 {
 	t_command	*command;
-
-	(void)envp;
-	(void)i;
-	(void)count;
 	command = malloc(sizeof(t_command));
 	if (!command)
 		return (NULL);

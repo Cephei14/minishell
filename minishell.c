@@ -6,58 +6,52 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 15:41:30 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 16:44:29 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	copy_env_value(t_data *data, char *new_arg, int *x, char *env_name)
+static int	process_line(t_data *data, t_command **command)
 {
-	char	*env_value;
-	int		j;
+	char	*line;
 
-	env_value = get_env_value(data, env_name);
-	j = 0;
-	if (env_value)
+	line = readline("minishell> ");
+	if (line == NULL)
 	{
-		while (env_value[j])
-		{
-			new_arg[*x] = env_value[j];
-			(*x)++;
-			j++;
-		}
+		printf("exit\n");
+		return (0);
 	}
+	if (*line)
+		add_history(line);
+	if (data->args)
+		free_split(data->args);
+	if (*command)
+		free_command(*command);
+	*command = init_command();
+	if (!*command)
+	{
+		free(line);
+		return (0);
+	}
+	declare(data, *command, line);
+	free(line);
+	return (1);
 }
 
-int main(int ac, char **av, char **envp)
+int	main(int ac, char **av, char **envp)
 {
-	char		*line;
 	t_data		*data;
 	t_command	*command;
 
 	(void)ac;
 	(void)av;
 	data = init_data(envp, 0, 0);
+	if (!data)
+		return (1);
 	command = NULL;
-	while(1)
-	{
-		line = readline("minishell> ");
-		if (line == NULL)
-		{
-			printf("exit\n");
-			break;
-		}
-		if (*line)
-			add_history(line);
-		if (data->args)
-			free_split(data->args);
-		if (command)
-			free_command(command);
-		command = init_command(envp, 0, 0);
-		declare(data, command, line);
-		free(line);
-	}
+	while (process_line(data, &command))
+		;
 	free_data_command(data, command);
 	return (data->last_exit_status);
 }
