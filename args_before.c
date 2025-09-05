@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:19:39 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:39:16 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,7 +284,7 @@ int	calculate_final_len(t_data *data, char *arg)
 	return (len);
 }
 
-static void	handle_expansion(t_data *d, char *n_s, char *arg, t_parse_state *st)
+void	handle_expansion(t_data *d, char *n_s, char *arg, t_parse_state *st)
 {
 	if (arg[st->i + 1] == '?')
 		expand_exit_status(d, n_s, st);

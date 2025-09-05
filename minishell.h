@@ -6,29 +6,29 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:23:23 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:38:53 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
-#define MINISHELL_H
+# define MINISHELL_H
 
-#include <unistd.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+# include <unistd.h>
+# include <limits.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
+# include <errno.h>
+# include <sys/wait.h>
+# include <fcntl.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
-struct	s_data;
-struct	s_built_in;
-struct	s_command;
+struct		s_data;
+struct		s_built_in;
+struct		s_command;
 
-typedef	struct s_data
+typedef struct s_data
 {
 	int					last_exit_status;
 	char				**args;
@@ -63,9 +63,9 @@ typedef struct s_command
 	struct s_command	*next;
 }	t_command;
 
-typedef	int (*t_builtin_func)(t_data *data, t_command *command);
+typedef int	(*t_builtin_func)(t_data *data, t_command *command);
 
-typedef	struct s_built_in
+typedef struct s_built_in
 {
 	char			*cmds;
 	t_builtin_func	func;
@@ -76,7 +76,8 @@ void		set_env_variable(t_data *data, char *var_name, char *value);
 void		executor(t_data *data, t_command *command, t_built_in *builtins);
 void		get_args(t_data *data, char *line);
 void		manage_env(t_data *data);
-void		analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *line);
+void		analyse_line(t_data *data, t_built_in *builtins,
+				t_command *command, char *line);
 void		declare(t_data *data, t_command *command, char *line);
 void		free_split(char **arr);
 void		free_command(t_command *command);
@@ -86,8 +87,9 @@ void		sort_env_array(char **envp_copy);
 void		print_one_env_for_export(char *env_str);
 void		ft_putstr_fd(char *s, int fd);
 void		print_env(t_data *data);
-void		handle_export_arg(t_data *data, t_command *command ,char *arg);
-void		expand_and_copy(t_data *data, char *n_s, int *j, char *arg, int *i);
+void		handle_export_arg(t_data *data, t_command *command, char *arg);
+void		handle_expansion(t_data *d, char *n_s,
+				char *arg, t_parse_state *st);
 void		remove_var_from_env(t_data *data, int index_to_remove, int count);
 int			find_env_var(char **envp, char *var_name);
 int			calculate_final_len(t_data *data, char *arg);
