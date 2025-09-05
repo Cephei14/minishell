@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:23:10 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:27:01 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	unset(t_data *data, t_command *command)
 	return (0);
 }
 
-int env(t_data *data, t_command *command)
+int	env(t_data *data, t_command *command)
 {
 	int	i;
 
@@ -52,7 +52,7 @@ int env(t_data *data, t_command *command)
 			printf("%s\n", data->envp[i]);
 		i++;
 	}
-    return (0);
+	return (0);
 }
 
 int	b_exit(t_data *data, t_command *command)

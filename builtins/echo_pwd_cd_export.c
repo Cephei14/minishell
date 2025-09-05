@@ -6,38 +6,38 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:27:26 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:23:58 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int echo(t_data *data, t_command *command)
+int	echo(t_data *data, t_command *command)
 {
-    int i;
-    int newline;
+	int	i;
+	int	newline;
 
 	(void)data;
-    i = 1;
-    newline = 1;
+	i = 1;
+	newline = 1;
 	while (command->args[i] && is_n_flag(command->args[i]))
 	{
-	    newline = 0;
-	    i++;
+		newline = 0;
+		i++;
 	}
-    while (command->args[i])
-    {
-        printf("%s", command->args[i]);
-        if (command->args[i + 1])
-            printf(" ");
-        i++;
-    }
-    if (newline)
-        printf("\n");
-    return (0);
+	while (command->args[i])
+	{
+		printf("%s", command->args[i]);
+		if (command->args[i + 1])
+			printf(" ");
+		i++;
+	}
+	if (newline)
+		printf("\n");
+	return (0);
 }
 
-int pwd(t_data *data,  t_command *command)
+int	pwd(t_data *data, t_command *command)
 {
 	char	*current_dir;
 
@@ -54,7 +54,7 @@ int pwd(t_data *data,  t_command *command)
 	return (0);
 }
 
-int	cd(t_data *data,  t_command *command)
+int	cd(t_data *data, t_command *command)
 {
 	char	*path;
 	char	*old_pwd;
@@ -82,7 +82,7 @@ int	cd(t_data *data,  t_command *command)
 	return (0);
 }
 
-static int	process_export_arg(t_data *data, t_command * command,char *arg)
+static int	process_export_arg(t_data *data, t_command *command, char *arg)
 {
 	char	*name;
 	char	*eq_pos;
@@ -100,10 +100,11 @@ static int	process_export_arg(t_data *data, t_command * command,char *arg)
 		free(name);
 		return (1);
 	}
-	handle_export_arg(data, command, arg); // Assuming handle_export_arg only needs arg
+	handle_export_arg(data, command, arg);
 	free(name);
 	return (0);
 }
+
 int	export(t_data *data, t_command *command)
 {
 	int	i;

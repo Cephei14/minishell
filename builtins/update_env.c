@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 16:00:52 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 13:30:22 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:27:28 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	add_env_var(t_data *data, char *new_var_str)
 		count++;
 	new_envp = malloc(sizeof(char *) * (count + 2));
 	if (!new_envp)
-		return;
+		return ;
 	i = 0;
 	while (i < count)
 	{
@@ -45,7 +45,7 @@ void	set_env_variable(t_data *data, char *var_name, char *value)
 	if (value == NULL)
 	{
 		if (find_env_var(data->envp, var_name) != -1)
-			return ; // Variable without value already exists, do nothing.
+			return ;
 		new_var_str = ft_strdup(var_name);
 	}
 	else

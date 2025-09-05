@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 18:19:33 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:22:36 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:27:16 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	remove_var_from_env(t_data *data, int index_to_remove, int count)
 		count++;
 	new_envp = malloc(sizeof(char *) * count);
 	if (!new_envp)
-		return;
+		return ;
 	i = 0;
 	j = 0;
 	while (data->envp[i])

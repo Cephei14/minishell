@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:24:04 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:26:41 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	print_env(t_data *data)
 
 	envp_copy = duplicate_env(data);
 	if (!envp_copy)
-		return;
+		return ;
 	sort_env_array(envp_copy);
 	i = 0;
 	while (envp_copy[i])

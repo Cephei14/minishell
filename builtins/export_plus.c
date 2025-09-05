@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:48:48 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 14:03:40 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 18:25:38 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ int	is_valid_identifier(char *name)
 char	*get_value(char *str, int i)
 {
 	int	l;
-	int flag;
+	int	flag;
 
 	flag = 0;
 	if (str[i] == '=')
 	{
 		i++;
-		if(str[i] == 34)
+		if (str[i] == 34)
 		{
 			flag = 2;
 			i++;
@@ -70,7 +70,7 @@ void	handle_export_arg(t_data *data, t_command *command, char *arg)
 	int		l;
 	char	*name;
 	char	*value;
-	char	*trimmed_arg; 
+	char	*trimmed_arg;
 
 	(void)command;
 	trimmed_arg = ft_strtrim(arg, " \t\n\v\f\r");
