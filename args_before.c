@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 17:03:09 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:19:39 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,38 +193,40 @@ int	env_len(char *str, int i)
 	return (l);
 }
 
-void	expand_and_copy(t_data *data, char *n_s, int *j, char *arg, int *i)
+// Handles the expansion of "$?"
+static void	expand_exit_status(t_data *data, char *new_str, t_parse_state *st)
+{
+	char	*exit_str;
+
+	exit_str = ft_itoa(data->last_exit_status);
+	ft_strlcpy(&new_str[st->j], exit_str, ft_strlen(exit_str) + 1);
+	st->j += ft_strlen(exit_str);
+	free(exit_str);
+	st->i += 2; // Skips '$' and '?'
+}
+
+// Handles the expansion of a variable like "$VAR"
+static void	expand_variable(t_data *data, char *new_str, char *arg, t_parse_state *st)
 {
 	char	*name;
 	char	*value;
 	int		name_len;
-	char	*exit_status_str;
 
-	(*i)++;
-	if (arg[*i] == '?')
-	{
-		exit_status_str = ft_itoa(data->last_exit_status);
-		ft_strlcpy(&n_s[*j], exit_status_str, ft_strlen(exit_status_str) + 1);
-		*j += ft_strlen(exit_status_str);
-		free(exit_status_str);
-		(*i)++;
-		return ;
-	}
-	name_len = env_len(arg, *i);
+	name_len = env_len(arg, st->i + 1);
 	if (name_len == 0)
 	{
-		n_s[(*j)++] = '$';
+		new_str[st->j++] = arg[st->i++];
 		return ;
 	}
-	name = ft_substr(arg, *i, name_len);
+	name = ft_substr(arg, st->i + 1, name_len);
 	value = get_env_value(data, name);
 	free(name);
 	if (value)
 	{
-		ft_strlcpy(&n_s[*j], value, ft_strlen(value) + 1);
-		*j += ft_strlen(value);
+		ft_strlcpy(&new_str[st->j], value, ft_strlen(value) + 1);
+		st->j += ft_strlen(value);
 	}
-	*i += name_len;
+	st->i += (name_len + 1); // Skips '$' and the variable name
 }
 
 int	get_expanded_len(t_data *data, char *str, int *i)
@@ -282,30 +284,39 @@ int	calculate_final_len(t_data *data, char *arg)
 	return (len);
 }
 
-char	*build_clean_arg(t_data *data, char *arg, int i, int j)
+static void	handle_expansion(t_data *d, char *n_s, char *arg, t_parse_state *st)
 {
-	char	*new_arg;
-	char	quote_char;
+	if (arg[st->i + 1] == '?')
+		expand_exit_status(d, n_s, st);
+	else
+		expand_variable(d, n_s, arg, st);
+}
 
+char	*build_clean_arg(t_data *data, char *arg, char quote_char)
+{
+	char			*new_arg;
+	t_parse_state	st;
+
+	st.i = 0;
+	st.j = 0;
 	new_arg = malloc(sizeof(char) * (calculate_final_len(data, arg) + 1));
 	if (!new_arg)
 		return (NULL);
-	quote_char = 0;
-	while (arg[i])
+	while (arg[st.i])
 	{
-		if ((arg[i] == '\'' || arg[i] == '\"') && quote_char == 0)
-			quote_char = arg[i++];
-		else if (arg[i] == quote_char)
+		if ((arg[st.i] == '\'' || arg[st.i] == '\"') && quote_char == 0)
+			quote_char = arg[st.i++];
+		else if (arg[st.i] == quote_char)
 		{
 			quote_char = 0;
-			i++;
+			st.i++;
 		}
-		else if (arg[i] == '$' && quote_char != '\'')
-			expand_and_copy(data, new_arg, &j, arg, &i);
+		else if (arg[st.i] == '$' && quote_char != '\'')
+			handle_expansion(data, new_arg, arg, &st);
 		else
-			new_arg[j++] = arg[i++];
+			new_arg[st.j++] = arg[st.i++];
 	}
-	new_arg[j] = '\0';
+	new_arg[st.j] = '\0';
 	return (new_arg);
 }
 
@@ -317,7 +328,7 @@ void	manage_env(t_data *data)
 	i = 0;
 	while (data->args[i])
 	{
-		clean_arg = build_clean_arg(data, data->args[i], 0, 0);
+		clean_arg = build_clean_arg(data, data->args[i], 0);
 		free(data->args[i]);
 		data->args[i] = clean_arg;
 		i++;
@@ -433,9 +444,9 @@ void	get_args(t_data *data, char *line)
 
 void analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *line)
 {
-	get_args(data, line); //Transforming the line we got from readline to args, and they stay like they are
-	manage_env(data); //extending the args to their real value $USER will became cepheus
+	get_args(data, line);
+	manage_env(data);
 	remove_empty_args(data, 0, 0);
-	fill_commands(data, command, 0); //moving each arg to the command structure, each command in one linked list while taking care and getting based on pipes and redirections
+	fill_commands(data, command, 0);
 	executor(data, command, builtins);
 }

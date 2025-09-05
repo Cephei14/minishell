@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 16:44:03 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 17:18:18 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,12 @@ typedef	struct s_data
 	char				**args;
 	char				**envp;
 }	t_data;
+
+typedef struct s_parse_state
+{
+	int	i;
+	int	j;
+}	t_parse_state;
 
 typedef enum e_redir_type
 {
@@ -119,7 +125,7 @@ char		*get_cd_path(t_data *data, t_command *command);
 char		*get_value(char *str, int i);
 char		*get_name(char *str, int *i);
 char		*get_env_value(t_data *data, char *var_name);
-char		*build_clean_arg(t_data *data, char *arg, int i, int j);
+char		*build_clean_arg(t_data *data, char *arg, char str);
 char		*ft_strtrim(char const *s1, char const *set);
 long long	ft_atoi(const char *str);
 size_t		ft_strlcpy(char *dest, const char *src, size_t n);
