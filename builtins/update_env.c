@@ -6,27 +6,11 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 16:00:52 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 22:24:28 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 13:30:22 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	*get_env_value(t_data *data, char *var_name)
-{
-	int		index;
-	int		name_len;
-	char	*var_string;
-
-	index = find_env_var(data->envp, var_name);
-	if (index == -1)
-		return (NULL);
-	var_string = data->envp[index];
-	name_len = ft_strlen(var_name);
-	if (var_string[name_len] == '=')
-		return (&var_string[name_len + 1]);
-	return (NULL);
-}
 
 void	add_env_var(t_data *data, char *new_var_str)
 {
@@ -50,23 +34,6 @@ void	add_env_var(t_data *data, char *new_var_str)
 	new_envp[i + 1] = NULL;
 	free(data->envp);
 	data->envp = new_envp;
-}
-
-int	find_env_var(char **envp, char *var_name)
-{
-	int		i;
-	int		name_len;
-
-	i = 0;
-	name_len = ft_strlen(var_name);
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], var_name, name_len) == 0
-			&& (envp[i][name_len] == '=' || envp[i][name_len] == '\0'))
-			return (i);
-		i++;
-	}
-	return (-1);
 }
 
 void	set_env_variable(t_data *data, char *var_name, char *value)

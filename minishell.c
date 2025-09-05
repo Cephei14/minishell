@@ -6,26 +6,11 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 23:25:10 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 14:02:36 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	manage_env(t_data *data)
-{
-	int		i;
-	char	*clean_arg;
-
-	i = 0;
-	while (data->args[i])
-	{
-		clean_arg = build_clean_arg(data, data->args[i], 0, 0);
-		free(data->args[i]);
-		data->args[i] = clean_arg;
-		i++;
-	}
-}
 
 void	copy_env_value(t_data *data, char *new_arg, int *x, char *env_name)
 {
@@ -47,28 +32,32 @@ void	copy_env_value(t_data *data, char *new_arg, int *x, char *env_name)
 
 int main(int ac, char **av, char **envp)
 {
-	char *line;
-	t_data *data;
+	char		*line;
+	t_data		*data;
+	t_command	*command;
 
 	(void)ac;
 	(void)av;
-	data = init_data(envp, 0, 0); //Here we create data structure and make a copy of the original environment variables that we have, you can write "export" in your shell to see them.
-	while(1) //Infinite loop to keep waiting the commands.
+	data = init_data(envp, 0, 0);
+	command = NULL;
+	while(1)
 	{
-		line = readline("minishell> "); //(char *line) will have what we worte in the shell. (echo "abc" "def" $HOME -> || line = echo "abc" "def" $HOME ||)
+		line = readline("minishell> ");
 		if (line == NULL)
 		{
-			if (isatty(STDIN_FILENO))
-				printf("exit\n");
+			printf("exit\n");
 			break;
 		}
 		if (*line)
 			add_history(line);
 		if (data->args)
-            free_split(data->args);
-		declare(data, line); //Here we create the struct built_in and link each command with it's function. 
+			free_split(data->args);
+		if (command)
+			free_command(command);
+		command = init_command(envp, 0, 0);
+		declare(data, command, line);
 		free(line);
 	}
-	free_data(data);
-	return 0;
+	free_data_command(data, command);
+	return (data->last_exit_status);
 }

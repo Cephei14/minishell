@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 15:48:48 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 23:20:31 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 14:03:40 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,14 @@ char	*get_name(char *str, int *i)
 	return (name);
 }
 
-void	handle_export_arg(t_data *data, char *arg)
+void	handle_export_arg(t_data *data, t_command *command, char *arg)
 {
 	int		l;
 	char	*name;
 	char	*value;
-	char	*trimmed_arg;
+	char	*trimmed_arg; 
 
+	(void)command;
 	trimmed_arg = ft_strtrim(arg, " \t\n\v\f\r");
 	l = 0;
 	name = get_name(trimmed_arg, &l);

@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 23:19:57 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 14:02:36 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,42 +24,49 @@
 
 struct	s_data;
 struct	s_built_in;
+struct	s_command;
 
-typedef	struct s_data //In this structure we store data.
+typedef	struct s_data
 {
-	int		last_exit_status;
-	char 	**args; //Here we store tokens for example : (echo "abc" "def" -> args[0] = echo, args[1] = "abc", args[2] = 'def').
-	char 	**envp; //since we cannot directly modify the original environment variables -> we should make a copy of them in our shell and then do whatever we want to them.
-
+	int					last_exit_status;
+	char				**args;
+	char				**envp;
 }	t_data;
 
-typedef	int (*t_builtin_func)(t_data *data);
-
-typedef	struct s_built_in //In this structure we store each command and it's function.
+typedef struct s_command
 {
-	char			*cmds; //Here are the builtins commands: (echo cd pwd export unset env exit).
-	t_builtin_func	func; //Here a function pointer pointing to the function for each command.
-	
-}	t_built_in;
+	char				**args;
+	char				*input_file;
+	char				*output_file;
+	int					is_append;
+	struct s_command	*next;
+}	t_command;
 
+typedef	int (*t_builtin_func)(t_data *data, t_command *command);
+
+typedef	struct s_built_in
+{
+	char			*cmds;
+	t_builtin_func	func;
+}	t_built_in;
 
 void		add_env_var(t_data *data, char *new_var_str);
 void		set_env_variable(t_data *data, char *var_name, char *value);
-void		compare_cmd(t_data *data, t_built_in *builtins);
+void		compare_cmd(t_data *data, t_command *command, t_built_in *builtins);
 void		get_args(t_data *data, char *line);
 void		manage_env(t_data *data);
-void		analyse_line(t_data *data, t_built_in *builtins, char *line);
-void		declare(t_data *data, char *line);
-void		analyse_line(t_data *data, t_built_in *builtins, char *str);
+void		analyse_line(t_data *data, t_built_in *builtins, t_command *command, char *line);
+void		declare(t_data *data, t_command *command, char *line);
 void		free_split(char **arr);
-void		free_data(t_data *data);
+void		free_command(t_command *command);
+void		free_data_command(t_data *data, t_command *command);
 void		copy_env_value(t_data *data, char *new_arg, int *x, char *env_name);
 void		update_pwd_vars(t_data *data, char *old_pwd);
 void		sort_env_array(char **envp_copy);
 void		print_one_env_for_export(char *env_str);
 void		ft_putstr_fd(char *s, int fd);
 void		print_env(t_data *data);
-void		handle_export_arg(t_data *data, char *arg);
+void		handle_export_arg(t_data *data, t_command *command ,char *arg);
 void		expand_and_copy(t_data *data, char *n_s, int *j, char *arg, int *i);
 void		remove_var_from_env(t_data *data, int index_to_remove);
 int			find_env_var(char **envp, char *var_name);
@@ -68,15 +75,15 @@ int			cd_error(char *path, char *old_pwd);
 int			get_expanded_len(t_data *data, char *str, int *i);	
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 int			ft_strcmp(char *s1, char *s2);
-int			echo(t_data *data);
-int			cd(t_data *data);
-int			pwd(t_data *data);
-int			export(t_data *data);
-int			unset(t_data *data);
-int			env(t_data *data);
+int			echo(t_data *data, t_command *command);
+int			cd(t_data *data, t_command *command);
+int			pwd(t_data *data, t_command *command);
+int			export(t_data *data, t_command *command);
+int			unset(t_data *data, t_command *command);
+int			env(t_data *data, t_command *command);
 int			is_n_flag(const char *arg);
 int			env_len(char *str, int i);
-int			b_exit(t_data *data);
+int			b_exit(t_data *data, t_command *command);
 int			escape_spaces(char *str, int i);
 int			escape_char(char *line, int i, char c);
 int			nb_of_args(char *line);
@@ -102,6 +109,7 @@ char		*ft_strtrim(char const *s1, char const *set);
 long long	ft_atoi(const char *str);
 size_t		ft_strlcpy(char *dest, const char *src, size_t n);
 size_t		ft_strlen(const char *str);
+t_command	*init_command(char **envp, int i, int count);
 t_data		*init_data(char **envp, int i, int count);
 
 #endif	

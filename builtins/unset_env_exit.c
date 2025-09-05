@@ -6,22 +6,22 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:46:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 23:20:32 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 14:04:12 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	unset(t_data *data)
+int	unset(t_data *data, t_command *command)
 {
 	int		i;
 	int		index_to_remove;
 	char	*trimmed_arg;
 
 	i = 1;
-	while (data->args[i])
+	while (command->args[i])
 	{
-		trimmed_arg = ft_strtrim(data->args[i], " \t\n\v\f\r");
+		trimmed_arg = ft_strtrim(command->args[i], " \t\n\v\f\r");
 		if (!is_valid_identifier(trimmed_arg))
 		{
 			ft_putstr_fd("minishell: unset: `", 2);
@@ -40,10 +40,11 @@ int	unset(t_data *data)
 	return (0);
 }
 
-int env(t_data *data)
+int env(t_data *data, t_command *command)
 {
 	int	i;
 
+	(void)command;
 	i = 0;
 	while (data->envp[i])
 	{
@@ -54,20 +55,20 @@ int env(t_data *data)
     return (0);
 }
 
-int	b_exit(t_data *data)
+int	b_exit(t_data *data, t_command *command)
 {
 	long long	exit_status;
 
-	if (data->args[1] == NULL)
+	if (command->args[1] == NULL)
 	{
 		printf("exit\n");
 		exit(data->last_exit_status);
 	}
-	if (!is_numeric(data->args[1]))
+	if (!is_numeric(command->args[1]))
 	{
 		printf("exit\n");
 		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(data->args[1], 2);
+		ft_putstr_fd(command->args[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
 		exit(2);
 	}
@@ -77,7 +78,7 @@ int	b_exit(t_data *data)
 		return (1);
 	}
 	printf("exit\n");
-	exit_status = ft_atoi(data->args[1]);
+	exit_status = ft_atoi(command->args[1]);
 	exit(exit_status % 256);
 	return (0);
 }

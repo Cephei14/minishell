@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/03 20:35:51 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/04 18:48:36 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/05 13:37:23 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,25 @@ t_data *init_data(char **envp, int i, int count)
 	return (data);
 }
 
-void declare(t_data *data, char *line)
+t_command *init_command(char **envp, int i, int count)
+{
+	t_command	*command;
+
+	(void)envp;
+	(void)i;
+	(void)count;
+	command = malloc(sizeof(t_command));
+	if (!command)
+		return (NULL);
+	command->args = NULL;
+	command->input_file = NULL;
+	command->output_file = NULL;
+	command->is_append = 0;
+	command->next = NULL;
+	return (command);
+}
+
+void declare(t_data *data, t_command *command, char *line)
 {
 	t_built_in builtins[] = {
 		{"echo", &echo},
@@ -50,5 +68,5 @@ void declare(t_data *data, char *line)
     	{"exit", &b_exit},
     	{NULL, NULL}
 	};
-	analyse_line(data, builtins, line);//Here we get the args like they are ( || echo "abc" "def" $HOME || -> args[0] = echo, args[1] = "abc", args[2] = 'def' args[3] = $HOME)
+	analyse_line(data, builtins, command, line);
 }
