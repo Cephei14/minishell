@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 15:40:03 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 16:00:29 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,16 @@ t_redir	*new_redir(char *filename, t_redir_type type)
 void	analyse_line(t_data *data, t_built_in *builtins,
 			t_command *command, char *line)
 {
+	data->parse_error = 0;
 	get_args(data, line);
 	manage_env(data);
 	remove_empty_args(data, 0, 0);
 	fill_commands(data, command, 0);
-	process_heredocs(command);
+	process_heredocs(command, data);
+	if (data->parse_error)
+	{
+		data->last_exit_status = 1;
+		return;
+	}
 	executor(data, command, builtins);
 }

@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 15:41:44 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 16:00:39 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ struct		s_command;
 
 typedef struct s_data
 {
+	int					parse_error;
 	int					last_exit_status;
 	char				**args;
 	char				**envp;
@@ -145,7 +146,7 @@ int			env_len(char *str, int i);
 int			nbr_len(int n);
 char		*get_env_value(t_data *data, char *var_name);
 int			find_env_var(char **envp, char *var_name);
-void	process_heredocs(t_command *command);
+void	process_heredocs(t_command *command, t_data *data);
 
 /* executor.c */
 void		executor(t_data *data, t_command *command, t_built_in *builtins);

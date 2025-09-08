@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:40:21 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 15:40:41 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 16:00:48 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 static char	*generate_heredoc_filename(void)
 {
-	static int	heredoc_count = 0;
+	static int	heredoc_count;
 	char		*heredoc_num_str;
 	char		*filename;
 
+	heredoc_count = 0;
 	heredoc_num_str = ft_itoa(heredoc_count++);
 	if (!heredoc_num_str)
 		return (NULL);
@@ -59,7 +60,7 @@ static int	read_heredoc_input(t_redir *redir)
 	return (0);
 }
 
-void	process_heredocs(t_command *command)
+void	process_heredocs(t_command *command, t_data *data)
 {
 	t_command	*current_cmd;
 	t_redir		*current_redir;
@@ -75,7 +76,7 @@ void	process_heredocs(t_command *command)
 				if (read_heredoc_input(current_redir) != 0)
 				{
 					perror("minishell: heredoc failed");
-					// You might want to set an error flag in your data struct here
+					data->parse_error = 1;
 					return ;
 				}
 			}
