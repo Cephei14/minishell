@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 19:05:03 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 15:41:44 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,7 @@ int			env_len(char *str, int i);
 int			nbr_len(int n);
 char		*get_env_value(t_data *data, char *var_name);
 int			find_env_var(char **envp, char *var_name);
+void	process_heredocs(t_command *command);
 
 /* executor.c */
 void		executor(t_data *data, t_command *command, t_built_in *builtins);

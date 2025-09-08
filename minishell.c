@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 16:44:29 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 15:50:50 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ int	main(int ac, char **av, char **envp)
 {
 	t_data		*data;
 	t_command	*command;
-
+	int	exit_status;
+	
 	(void)ac;
 	(void)av;
 	data = init_data(envp, 0, 0);
@@ -52,6 +53,7 @@ int	main(int ac, char **av, char **envp)
 	command = NULL;
 	while (process_line(data, &command))
 		;
+	exit_status = data->last_exit_status;
 	free_data_command(data, command);
-	return (data->last_exit_status);
+	return (exit_status);
 }

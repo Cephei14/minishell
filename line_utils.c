@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/05 18:11:30 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 15:40:03 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,6 @@ void	analyse_line(t_data *data, t_built_in *builtins,
 	manage_env(data);
 	remove_empty_args(data, 0, 0);
 	fill_commands(data, command, 0);
+	process_heredocs(command);
 	executor(data, command, builtins);
 }
