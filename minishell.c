@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 17:21:51 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:35:33 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,7 @@ static int	process_line(t_data *data, t_command **command)
 	line = readline("minishell> ");
 
 	if (g_signal_received == SIGINT)
-	{
 		data->last_exit_status = 130;
-		free(line);
-		return (1);
-	}
 	if (line == NULL)
 	{
 		printf("exit\n");
