@@ -15,6 +15,7 @@ SRCS =	minishell.c \
 		fill_command.c \
 		free.c \
 		heredoc.c \
+		signals.c \
 		get_args.c \
 		init_data.c \
 		line_utils.c \

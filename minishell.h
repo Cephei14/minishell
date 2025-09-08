@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 16:00:39 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:25:12 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <errno.h>
+# include <signal.h>
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <readline/readline.h>
@@ -27,6 +28,7 @@
 struct		s_data;
 struct		s_built_in;
 struct		s_command;
+extern volatile sig_atomic_t	g_signal_received;
 
 typedef struct s_data
 {
@@ -167,5 +169,6 @@ void		free_data_command(t_data *data, t_command *command);
 void		free_command(t_command *command);
 void		free_redirs(t_redir *redirs);
 void		free_split(char **arr);
+void		setup_signals(void);
 
 #endif	

@@ -6,22 +6,14 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 15:50:50 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:21:51 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	process_line(t_data *data, t_command **command)
+static int	handle_line_processing(t_data *data, t_command **command, char *line)
 {
-	char	*line;
-
-	line = readline("minishell> ");
-	if (line == NULL)
-	{
-		printf("exit\n");
-		return (0);
-	}
 	if (*line)
 		add_history(line);
 	if (data->args)
@@ -37,6 +29,27 @@ static int	process_line(t_data *data, t_command **command)
 	declare(data, *command, line);
 	free(line);
 	return (1);
+}
+
+static int	process_line(t_data *data, t_command **command)
+{
+	char	*line;
+
+	g_signal_received = 0;
+	line = readline("minishell> ");
+
+	if (g_signal_received == SIGINT)
+	{
+		data->last_exit_status = 130;
+		free(line);
+		return (1);
+	}
+	if (line == NULL)
+	{
+		printf("exit\n");
+		return (0);
+	}
+	return (handle_line_processing(data, command, line));
 }
 
 int	main(int ac, char **av, char **envp)
