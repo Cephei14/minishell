@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:40:21 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 16:00:48 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 16:55:56 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,25 @@ static char	*generate_heredoc_filename(void)
 	return (filename);
 }
 
-static int	read_heredoc_input(t_redir *redir)
+static void	heredoc_loop(int fd, const char *delimiter)
 {
 	char	*line;
+
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || ft_strcmp(line, delimiter) == 0)
+		{
+			free(line);
+			break ;
+		}
+		ft_putstr_fd(line, fd);
+		ft_putstr_fd("\n", fd);
+		free(line);
+	}
+}
+static int	read_heredoc_input(t_redir *redir)
+{
 	int		fd;
 	char	*temp_filename;
 
@@ -42,18 +58,7 @@ static int	read_heredoc_input(t_redir *redir)
 		free(temp_filename);
 		return (1);
 	}
-	while (1)
-	{
-		line = readline("> ");
-		if (!line || ft_strcmp(line, redir->filename) == 0)
-		{
-			free(line);
-			break ;
-		}
-		ft_putstr_fd(line, fd);
-		ft_putstr_fd("\n", fd);
-		free(line);
-	}
+	heredoc_loop(fd, redir->filename);
 	close(fd);
 	free(redir->filename);
 	redir->filename = temp_filename;
