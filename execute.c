@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/05 19:02:29 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 18:01:08 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 18:59:20 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,8 @@
 static void	child_process_logic(t_data *d, t_command *cmd,
 		t_built_in *b, t_pipe_fds *fds)
 {
-	struct sigaction	sa;
-
-	sa.sa_handler = SIG_DFL;
-	sigaction(SIGINT, &sa, NULL);
-	sa.sa_handler = SIG_DFL;
-	sigaction(SIGQUIT, &sa, NULL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (fds->in_fd != STDIN_FILENO)
 	{
 		dup2(fds->in_fd, STDIN_FILENO);
