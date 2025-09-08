@@ -6,12 +6,14 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 17:25:12 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:39:36 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
+#define _POSIX_C_SOURCE 200809L
 
 # include <unistd.h>
 # include <limits.h>
