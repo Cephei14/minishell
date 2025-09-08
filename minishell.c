@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 17:35:33 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:51:10 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,11 @@ static int	process_line(t_data *data, t_command **command)
 
 	g_signal_received = 0;
 	line = readline("minishell> ");
-
 	if (g_signal_received == SIGINT)
+	{
 		data->last_exit_status = 130;
+		return (1);
+	}
 	if (line == NULL)
 	{
 		printf("exit\n");
@@ -52,10 +54,11 @@ int	main(int ac, char **av, char **envp)
 {
 	t_data		*data;
 	t_command	*command;
-	int	exit_status;
+	int			exit_status;
 	
 	(void)ac;
 	(void)av;
+	setup_signals();
 	data = init_data(envp, 0, 0);
 	if (!data)
 		return (1);

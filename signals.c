@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 17:17:02 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 17:39:23 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:44:47 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,14 @@ volatile sig_atomic_t	g_signal_received = 0;
 
 void	signal_handler(int signum)
 {
-    g_signal_received = signum;
+	if (signum == SIGINT)
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_signal_received = SIGINT;
+	}
 }
 
 void	setup_signals(void)
