@@ -6,14 +6,14 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:44 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 17:39:36 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:58:22 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#define _POSIX_C_SOURCE 200809L
+# define _POSIX_C_SOURCE 200809L
 
 # include <unistd.h>
 # include <limits.h>
@@ -27,9 +27,9 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
-struct		s_data;
-struct		s_built_in;
-struct		s_command;
+struct							s_data;
+struct							s_built_in;
+struct							s_command;
 extern volatile sig_atomic_t	g_signal_received;
 
 typedef struct s_data
@@ -74,7 +74,8 @@ typedef struct s_command
 	struct s_command	*next;
 }	t_command;
 
-typedef int	(*t_builtin_func)(t_data *data, t_command *command);
+typedef int						(*t_builtin_func)(t_data *data,
+									t_command *command);
 
 typedef struct s_built_in
 {
@@ -150,7 +151,7 @@ int			env_len(char *str, int i);
 int			nbr_len(int n);
 char		*get_env_value(t_data *data, char *var_name);
 int			find_env_var(char **envp, char *var_name);
-void	process_heredocs(t_command *command, t_data *data);
+void		process_heredocs(t_command *command, t_data *data);
 
 /* executor.c */
 void		executor(t_data *data, t_command *command, t_built_in *builtins);

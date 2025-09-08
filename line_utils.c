@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 20:32:42 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 16:00:29 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 18:00:45 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	analyse_line(t_data *data, t_built_in *builtins,
 	if (data->parse_error)
 	{
 		data->last_exit_status = 1;
-		return;
+		return ;
 	}
 	executor(data, command, builtins);
 }

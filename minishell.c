@@ -6,13 +6,14 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/04 23:04:35 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 17:51:10 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 18:00:11 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	handle_line_processing(t_data *data, t_command **command, char *line)
+static int	handle_line_processing(t_data *data,
+			t_command **command, char *line)
 {
 	if (*line)
 		add_history(line);
@@ -55,7 +56,7 @@ int	main(int ac, char **av, char **envp)
 	t_data		*data;
 	t_command	*command;
 	int			exit_status;
-	
+
 	(void)ac;
 	(void)av;
 	setup_signals();

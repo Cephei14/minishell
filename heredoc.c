@@ -6,7 +6,7 @@
 /*   By: rdhaibi <rdhaibi@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 15:40:21 by rdhaibi           #+#    #+#             */
-/*   Updated: 2025/09/08 16:55:56 by rdhaibi          ###   ########.fr       */
+/*   Updated: 2025/09/08 18:00:28 by rdhaibi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static void	heredoc_loop(int fd, const char *delimiter)
 		free(line);
 	}
 }
+
 static int	read_heredoc_input(t_redir *redir)
 {
 	int		fd;
